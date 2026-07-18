@@ -1,0 +1,9 @@
+TOTAL OBRAS — DEMONSTRAÇÃO HTML CORRIGIDA
+
+1. Extraia todo o ZIP para uma pasta.
+2. Abra index.html no Google Chrome ou Microsoft Edge.
+3. Não abra o arquivo de dentro da visualização do ZIP.
+4. O index.html agora contém o CSS e o JavaScript internamente e funciona por duplo clique.
+5. Os dados são fictícios e ficam somente no navegador.
+
+Também pode ser publicado no GitHub Pages.
