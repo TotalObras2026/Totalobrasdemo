@@ -1,9 +1,9 @@
-TOTAL OBRAS — DEMONSTRAÇÃO HTML CORRIGIDA
+TOTAL OBRAS — DEMONSTRAÇÃO HTML COM DASHBOARD
 
-1. Extraia todo o ZIP para uma pasta.
-2. Abra index.html no Google Chrome ou Microsoft Edge.
-3. Não abra o arquivo de dentro da visualização do ZIP.
-4. O index.html agora contém o CSS e o JavaScript internamente e funciona por duplo clique.
-5. Os dados são fictícios e ficam somente no navegador.
+1. Extraia todos os arquivos para uma pasta.
+2. Abra index.html no Chrome ou Edge.
+3. A demonstração funciona sem internet e salva dados fictícios no navegador.
+4. Para publicar no GitHub Pages, envie todo o conteúdo desta pasta para o repositório.
+5. O arquivo CNAME já aponta para demo.totalobras.com.br.
 
-Também pode ser publicado no GitHub Pages.
+Esta versão não contém banco real, Supabase, licenciamento privado nem dados de clientes.
