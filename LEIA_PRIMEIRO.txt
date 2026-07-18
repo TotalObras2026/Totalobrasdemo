@@ -1,9 +1,10 @@
-TOTAL OBRAS — DEMONSTRAÇÃO HTML COM DASHBOARD
+TOTAL OBRAS — DEMONSTRAÇÃO COMPLETA
 
-1. Extraia todos os arquivos para uma pasta.
+1. Extraia todo o ZIP.
 2. Abra index.html no Chrome ou Edge.
-3. A demonstração funciona sem internet e salva dados fictícios no navegador.
-4. Para publicar no GitHub Pages, envie todo o conteúdo desta pasta para o repositório.
-5. O arquivo CNAME já aponta para demo.totalobras.com.br.
+3. A tela Modelos de proposta contém os descritivos completos.
+4. Em Orçamentos, clique em Visualizar para abrir o documento montado.
+5. Em Editar, selecione um modelo e altere objeto, escopo, metodologia, prazo, pagamento, exclusões e observações.
+6. Para publicar, substitua os arquivos do repositório da demo e faça git add ., git commit e git push.
 
-Esta versão não contém banco real, Supabase, licenciamento privado nem dados de clientes.
+A demonstração usa somente dados fictícios e armazenamento local do navegador.

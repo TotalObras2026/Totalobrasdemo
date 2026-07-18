@@ -1,18 +1,12 @@
-# Total Obras — Demonstração HTML
+# Total Obras — Demo completa
 
-Demonstração comercial independente, pronta para GitHub Pages e abertura local.
+Versão comercial interativa com:
 
-## Recursos
-
-- menu lateral agrupado e recolhível;
-- dashboard visual de orçamentos;
-- filtros por período, responsável e serviço;
-- cartões e status clicáveis;
-- propostas próximas da validade;
-- orçamentos, clientes, serviços e modelos demonstrativos;
-- financeiro com recebimento e exclusão de contas;
-- dados fictícios persistidos no `localStorage`;
-- botão para restaurar a demonstração;
-- funcionamento responsivo.
-
-Domínio previsto: `demo.totalobras.com.br`.
+- dashboard lateral;
+- 14 modelos descritivos completos;
+- modelo de Instituição de Condomínio Edilício;
+- montagem e edição de orçamento;
+- visualização final da proposta;
+- impressão/PDF pelo navegador;
+- clientes, serviços e financeiro fictícios;
+- funcionamento local e no GitHub Pages.
