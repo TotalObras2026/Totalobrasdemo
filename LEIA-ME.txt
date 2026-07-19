@@ -1,0 +1,40 @@
+TOTAL OBRAS — DEMONSTRAÇÃO FIEL À V3.3 BETA 2.2
+================================================
+
+TESTAR DIRETAMENTE NO COMPUTADOR
+--------------------------------
+1. Extraia todo o ZIP para uma pasta normal.
+2. Abra demo-local.html no Chrome ou Edge.
+3. Esse arquivo reúne aplicação, CSS e JavaScript em um único HTML.
+4. Não abra o arquivo diretamente de dentro do ZIP.
+
+PUBLICAR NO GITHUB PAGES
+------------------------
+1. Envie TODOS os arquivos e a pasta assets para a raiz do repositório.
+2. O arquivo inicial do site é index.html.
+3. O CNAME já aponta para demo.totalobras.com.br.
+4. Execute:
+
+   git add .
+   git commit -m "Publica demo fiel Total Obras Beta 2.2"
+   git push
+
+CONTEÚDO
+--------
+- Interface React derivada do mesmo código da versão desktop Beta 2.2.
+- Dashboard e menu lateral.
+- Clientes e catálogo de serviços.
+- Modelos descritivos completos.
+- Orçamentos com sanfonas nas seções 1 a 11.
+- Fechamento sempre aberto e comandos para salvar.
+- Visualização e impressão da proposta.
+- Duplicação com seleção dos responsáveis atuais.
+- Financeiro demonstrativo interativo.
+- Dados fictícios persistidos no navegador.
+- Botão Restaurar demonstração.
+
+SEGURANÇA
+---------
+- Não contém banco real de clientes.
+- Não contém chaves privadas do Supabase, OpenAI ou licenciamento.
+- Não grava dados no banco da versão desktop.
