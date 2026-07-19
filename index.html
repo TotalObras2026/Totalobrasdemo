@@ -1,15 +1,694 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Demonstração interativa do Total Obras — Propostas e Gestão." />
-    <title>Total Obras — Demonstração Interativa</title>
-    <script type="module" crossorigin src="./assets/index-CMsrAq2q.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DIwVKFMt.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Demonstração do Total Obras espelhando a navegação, os status e os módulos do aplicativo real.">
+<title>Total Obras — Demonstração</title>
+<style>
+:root{--navy:#18263a;--gold:#c6a044;--gold-ink:#9a7626;--paper:#f6f5f1;--surface:#fff;--ink:#18263a;--muted:#66758a;--line:#dedad1;--shadow:0 8px 24px rgba(24,38,58,.08);--side:252px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 Inter,"Segoe UI",Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}a{color:inherit}
+.demo-strip{position:fixed;z-index:60;inset:0 0 auto;height:30px;display:flex;align-items:center;justify-content:center;background:#101a28;color:#f4d97e;font-weight:800;font-size:12px;letter-spacing:.03em}
+.topbar{position:fixed;z-index:50;top:30px;left:0;right:0;height:76px;background:var(--navy);color:#fff;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(198,160,68,.3)}
+.brand{width:var(--side);display:flex;align-items:center;gap:11px}.brand-mark{width:8px;height:32px;border-radius:8px;background:linear-gradient(180deg,#e2c168,var(--gold))}
+.brand strong{display:block;font-size:16px}.brand small{display:block;color:#b9c5d3;font-size:11px}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.license-pill{display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;background:rgba(31,191,130,.14);border:1px solid rgba(31,191,130,.35);color:#7be0b8;font-weight:700;font-size:12px;text-decoration:none}
+.license-pill i{width:7px;height:7px;border-radius:50%;background:#1fbf82;display:inline-block}
+.company-select{min-width:220px;padding:9px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:#233247;color:#fff}
+.company-select option{color:#111;background:#fff}
+.menu-toggle{display:none;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 10px}
+.sidebar{position:fixed;z-index:45;top:106px;bottom:0;left:0;width:var(--side);background:var(--navy);color:#e7edf6;padding:16px 12px;display:flex;flex-direction:column;overflow:auto;transition:.2s}
+.sidebar.collapsed{width:74px}.sidebar.collapsed .nav-label,.sidebar.collapsed .group,.sidebar.collapsed .side-meta{display:none}
+.sidebar.collapsed .nav-item{justify-content:center}.sidebar.collapsed~.main{margin-left:74px}
+.group{padding:12px 12px 6px;color:#8ea0ba;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.nav-item{width:100%;border:0;background:transparent;color:#e7edf6;border-radius:10px;padding:10px 12px;margin:2px 0;text-align:left;font-weight:650;display:flex;gap:11px;align-items:center;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.08)}.nav-item.active{background:rgba(255,255,255,.15);box-shadow:inset 3px 0 var(--gold)}
+.nav-item .ico{width:18px;text-align:center;color:#a9bad0;flex:0 0 auto}.nav-item.active .ico{color:var(--gold)}
+.nav-item.locked{opacity:.4;cursor:not-allowed}
+.side-bottom{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding-top:12px}
+.collapse{width:100%;border:0;background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:9px}
+.side-meta{padding:8px 10px;color:#9fb0c6;font-size:11px}
+.main{margin-left:var(--side);padding-top:106px;min-height:100vh;transition:.2s}
+.content{max-width:1440px;margin:auto;padding:28px 30px 60px}
+.page-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap}
+.page-head h1{margin:0;font-size:26px;letter-spacing:-.01em}.page-head p{margin:6px 0 0;color:var(--muted);font-size:14.5px}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 14px;font-weight:700;font-size:13.5px}
+.btn:hover{background:#faf8f4}.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn.primary:hover{background:#243955}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--navy)}.btn.gold:hover{background:var(--gold-ink);color:#fff}
+.btn.danger{color:#b62543;border-color:#efb7c2;background:#fff8f9}.btn.sm{padding:6px 10px;font-size:12px}.btn.link{border:0;background:none;color:var(--gold-ink);padding:2px;font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.card-pad{padding:20px}.card-title{margin:0;font-size:16px;font-weight:700}.card-sub{margin:5px 0 0;color:var(--muted);font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.stat-label{color:#63748a;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.stat-value{font-size:23px;font-weight:800;margin-top:9px}.stat-note{font-size:11.5px;color:var(--muted);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,.85fr);gap:18px;margin-bottom:18px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end;background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:160px}.field.grow{flex:1;min-width:230px}
+.field label{color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.input,.select,.textarea{width:100%;border:1px solid #cec7ba;border-radius:8px;padding:9px 10px;background:#fff;color:var(--ink);outline:none}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(198,160,68,.18)}
+.textarea{min-height:80px;resize:vertical}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:900px}
+.table th{background:#faf8f3;color:#64758a;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:11px 14px;border-bottom:1px solid #e8e1d6}
+.table td{padding:12px 14px;border-bottom:1px solid #ece6dc;vertical-align:middle}.table tbody tr:hover{background:#fcfbf8}
+.amount{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;border:1px solid transparent;border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:800}
+.pill-draft{background:#eeece6;border-color:#dedad1;color:#4d5967}
+.pill-sent{background:#eef3f8;border-color:#b8ccde;color:#294e70}
+.pill-approved{background:#e9f8f1;border-color:#a7e2c5;color:#0d7a4f}
+.pill-rejected{background:#fbe9ec;border-color:#f0b9c3;color:#a3253c}
+.pill-expired{background:#fbf3e1;border-color:#e9d29c;color:#9a7626}
+.pill-cancelled{background:#e3e6ea;border-color:#c7ccd3;color:#3c4552}
+.status-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.status-row{display:grid;grid-template-columns:108px 1fr 30px;gap:10px;align-items:center}
+.bar{height:9px;background:#ece7df;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%}
+.alert-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.alert{padding:10px 12px;border:1px solid #eee7dc;border-radius:10px;display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.alert small{display:block;color:var(--muted)}
+.steps-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.step-chip{font-size:12px;font-weight:700;color:var(--muted);padding:6px 12px;border-radius:999px;background:#f2efe6}
+.step-chip.active{background:var(--navy);color:#fff}.step-chip.done{background:#e9f8f1;color:#0d7a4f}
+.wizard-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+@media(max-width:980px){.wizard-grid{grid-template-columns:1fr}}
+.chk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk-item{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;font-size:13px}
+.chk-item.on{border-color:var(--gold);background:#fffaf0}
+.preview-pane{background:var(--navy);border-radius:14px;padding:18px;color:#fff;position:sticky;top:120px}
+.preview-pane h4{margin:0 0 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#f4d97e}
+.preview-doc{background:#fff;color:var(--ink);border-radius:9px;padding:16px;font-size:12.5px;max-height:56vh;overflow:auto}
+.preview-doc h5{margin:12px 0 4px;font-size:11px;text-transform:uppercase;color:var(--navy)}.preview-doc h5:first-child{margin-top:0}
+.preview-doc ul{margin:4px 0;padding-left:16px}
+.doc-total{display:flex;justify-content:space-between;font-weight:800;border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.wizard-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(330px,.72fr);gap:20px;align-items:start}
+.wizard-main{min-width:0}.wizard-preview{position:sticky;top:122px;min-width:0}
+.step-chip{border:0;cursor:pointer}.step-chip:disabled{cursor:default}.step-chip.future{cursor:not-allowed}
+.step-actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #ece6dc}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid .wide{grid-column:1/-1}
+.inline-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.inline-head h3{margin:0;font-size:15px}
+.inline-panel{border:1px solid var(--line);background:#fbfaf7;border-radius:12px;padding:14px;margin-top:12px}
+.service-editor{border:1px solid var(--line);border-radius:12px;background:#fff;margin-top:12px;overflow:hidden}
+.service-editor summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;background:#faf8f3;font-weight:800}
+.service-editor summary::-webkit-details-marker{display:none}.service-editor summary:before{content:'▸';margin-right:7px}.service-editor[open] summary:before{content:'▾'}
+.service-editor-body{padding:15px}.service-actions{display:flex;gap:8px;flex-wrap:wrap}
+.mini-note{font-size:11.5px;color:var(--muted)}
+.edit-list{display:flex;flex-direction:column;gap:8px}.edit-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:8px;align-items:center}
+.fee-table{min-width:930px}.fee-table .input,.fee-table .select{padding:6px 8px;font-size:12.5px}.fee-objective td{padding-top:0;background:#fcfbf8}
+.section-divider{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 12px;padding-top:18px;border-top:1px solid #e6dfd3}.section-divider h3{margin:0;font-size:15px}.cost-table{margin-bottom:8px}
+.financial-summary{margin-top:16px;margin-left:auto;max-width:430px;border:1px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px}.financial-summary>div{display:flex;justify-content:space-between;gap:16px;padding:5px 0}.financial-summary .total-line{border-top:1px solid var(--line);margin-top:6px;padding-top:10px;font-size:16px;color:var(--navy)}
+.preview-doc .preview-muted{color:var(--muted);font-size:11.5px}.preview-doc p{white-space:pre-line}.preview-doc .preview-section{border-top:1px solid #ece6dc;margin-top:10px;padding-top:9px}
+.close-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.close-grid .wide{grid-column:1/-1}
+.final-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.document{position:relative;overflow:hidden}.document>*:not(.demo-watermark){position:relative;z-index:2}
+.demo-watermark{position:absolute;z-index:1;left:50%;top:47%;transform:translate(-50%,-50%) rotate(-32deg);font-weight:900;font-size:72px;letter-spacing:.06em;color:rgba(172,42,60,.105);white-space:nowrap;text-align:center;pointer-events:none;line-height:.86}
+.demo-watermark small{display:block;font-size:25px;letter-spacing:.11em;margin-top:13px}
+.doc-demo-notice{margin:-42px -48px 26px;padding:8px 14px;text-align:center;background:#fff1f2;color:#a3253c;border-bottom:1px solid #f0b9c3;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.responsible-list{display:flex;flex-direction:column;gap:7px}.responsible-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+@media(max-width:1120px){.wizard-layout{grid-template-columns:1fr}.wizard-preview{position:static}.preview-doc{max-height:460px}}
+@media(max-width:720px){.form-grid,.close-grid{grid-template-columns:1fr}.form-grid .wide,.close-grid .wide{grid-column:auto}.chk-grid{grid-template-columns:1fr}.step-actions{position:sticky;bottom:0;background:#fff;padding:12px 0 4px;z-index:5}.demo-watermark{font-size:42px}.doc-demo-notice{margin:-26px -18px 20px}}
+.empty{text-align:center;color:var(--muted);padding:32px}
+.template-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.template-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:190px}
+.template-card .category{color:var(--gold-ink);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.template-card h3{font-size:16px;margin:7px 0}.template-card p{color:var(--muted);margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:13px}
+.template-card .actions{margin-top:auto}
+.template-detail{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px}
+@media(max-width:900px){.template-detail{grid-template-columns:1fr}}
+.toc{position:sticky;top:120px;align-self:start}.toc button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:8px 9px;border-radius:8px;color:var(--ink);font-size:13px}
+.toc button:hover{background:#f2eee6}
+.text-section{padding:16px 18px;border-bottom:1px solid #ece6dc}.text-section:last-child{border-bottom:0}
+.text-section h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px;color:var(--navy)}
+.bullets{margin:0;padding:0;list-style:none}.bullets li{margin:5px 0;padding-left:16px;position:relative;font-size:13.5px}
+.bullets li:before{content:"•";position:absolute;left:1px;color:var(--gold-ink);font-weight:900}
+.package-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.package-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px;box-shadow:var(--shadow)}
+.package-card h3{margin:0 0 6px;font-size:16px}.package-card .audience{font-size:12px;color:var(--gold-ink);font-weight:700;margin-bottom:8px}
+.module-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.module-item{border-radius:8px;padding:9px 11px;font-size:13px;border:1px solid var(--line)}
+.module-item.on{border-color:#a7e2c5;background:#e9f8f1;color:#0d7a4f}.module-item.off{background:#faf8f4;color:#a3aab5}
+.document-shell{background:#e9e5dc;border:1px solid #d5cec1;border-radius:14px;padding:24px;overflow:auto}
+.document{width:min(820px,100%);margin:auto;background:#fff;color:#1d2938;padding:42px 48px;box-shadow:0 10px 35px rgba(20,42,71,.16);min-height:1000px}
+.doc-head{display:flex;justify-content:space-between;gap:22px;padding-bottom:18px;border-bottom:1px solid #d9dde2}
+.doc-logo{display:flex;gap:11px;align-items:center}.doc-logo-mark{width:7px;height:44px;background:var(--gold);border-radius:5px}
+.doc-company{font-size:17px;font-weight:800}.doc-muted{color:#667085;font-size:11.5px}
+.doc-title{text-align:center;margin:24px 0 20px;font-size:16px;text-transform:uppercase;letter-spacing:.06em}
+.doc-info{display:grid;grid-template-columns:1fr 1fr;gap:9px 20px;font-size:12.5px}.doc-info .wide{grid-column:1/-1}
+.doc-label{display:block;color:#667085;text-transform:uppercase;font-size:9px;letter-spacing:.05em;font-weight:800}
+.doc-section{margin-top:20px;padding-top:13px;border-top:1px solid #dfe3e8}
+.doc-section h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px}.doc-section p{margin:0 0 7px;font-size:12.5px}
+.doc-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.doc-table th,.doc-table td{padding:7px 5px;border-bottom:1px solid #e5e7eb}.doc-table th{text-align:left;color:#667085;font-weight:700}
+.doc-table .right{text-align:right}.doc-total-row td{font-weight:800}
+.doc-footer{margin-top:40px;padding-top:9px;border-top:1px solid #e1e5ea;text-align:center;color:#667085;font-size:10px}
+.toast{position:fixed;right:22px;bottom:22px;z-index:90;background:#17324f;color:#fff;border-radius:10px;padding:12px 15px;box-shadow:0 12px 30px rgba(0,0,0,.22);opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s}
+.toast.show{opacity:1;transform:none}.overlay{display:none}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)}.template-grid,.package-grid,.module-grid{grid-template-columns:1fr}.grid-2,.wizard-grid{grid-template-columns:1fr}}
+@media(max-width:780px){.topbar{height:70px;padding:0 12px}.brand{width:auto}.brand small,.license-pill,.company-select{display:none}.menu-toggle{display:block;margin-left:auto}
+.sidebar{top:100px;transform:translateX(-102%);width:260px}.sidebar.mobile-open{transform:none}
+.main{margin-left:0!important;padding-top:100px}.content{padding:20px 14px 45px}
+.overlay{position:fixed;z-index:40;inset:100px 0 0;background:rgba(7,20,35,.45);display:block}
+.page-head{flex-direction:column}.stats,.kpis{grid-template-columns:1fr}.document{padding:26px 18px;min-width:0}.doc-info{grid-template-columns:1fr}.doc-info .wide{grid-column:auto}}
+@media print{.demo-strip,.topbar,.sidebar,.page-head,.no-print,.toast{display:none!important}.main{margin:0!important;padding:0!important}.content{padding:0!important;max-width:none}
+.document-shell{border:0;background:#fff;padding:0}.document{box-shadow:none;width:100%;padding:0;min-height:0;overflow:visible}.doc-section{break-inside:avoid}.demo-watermark{position:fixed;left:50%;top:48%;font-size:68px}.doc-demo-notice{margin:0 0 22px}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="demo-strip">DEMONSTRAÇÃO — ESPELHA A NAVEGAÇÃO E OS DADOS DO TOTAL OBRAS REAL, COM DADOS FICTÍCIOS</div>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark"></span><div><strong>Total Obras</strong><small>Propostas e Gestão</small></div></div>
+  <div class="top-actions">
+    <a href="#" data-page="licenca" class="license-pill"><i></i>Plano Profissional · Ativa</a>
+    <select id="companySelect" class="company-select"><option>Estúdio Meridiano Arquitetura</option><option>Vértice Engenharia Estrutural</option></select>
+    <button id="mobileMenu" class="menu-toggle">☰</button>
+  </div>
+</header>
+<aside id="sidebar" class="sidebar">
+  <div class="group">Gestão</div>
+  <button class="nav-item active" data-page="dashboard"><span class="ico">▦</span><span class="nav-label">Painel</span></button>
+  <button class="nav-item" data-page="budgets"><span class="ico">▤</span><span class="nav-label">Orçamentos</span></button>
+  <button class="nav-item" data-page="new-budget"><span class="ico">+</span><span class="nav-label">Novo orçamento</span></button>
+  <button class="nav-item" data-page="templates"><span class="ico">◫</span><span class="nav-label">Modelos de proposta</span></button>
+  <button class="nav-item" data-page="packages"><span class="ico">▣</span><span class="nav-label">Pacotes</span></button>
+  <div class="group">Administração</div>
+  <button class="nav-item" data-page="finance"><span class="ico">$</span><span class="nav-label">Financeiro</span></button>
+  <button class="nav-item" data-page="settings"><span class="ico">⚙</span><span class="nav-label">Configurações</span></button>
+  <button class="nav-item" data-page="licenca"><span class="ico">◆</span><span class="nav-label">Licença e plano</span></button>
+  <div class="side-bottom"><button id="collapse" class="collapse">⇤ <span class="nav-label">Recolher menu</span></button><div class="side-meta">Total Obras · Demo 5 etapas v2</div></div>
+</aside>
+<main class="main"><div id="content" class="content"></div></main>
+<div id="overlay" class="overlay hidden"></div>
+<div id="toast" class="toast"></div>
+<script>
+(()=>{
+const STORAGE='total-obras-demo-real-v1';
+const TODAY=()=>new Date();
+const iso=(d)=>{const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`};
+const addDays=(d,n)=>{const c=new Date(d);c.setDate(c.getDate()+n);return c};
+const fmtDate=(v)=>{if(!v)return '—';const m=typeof v==='string'&&/^(\d{4})-(\d{2})-(\d{2})/.exec(v);const d=m?new Date(Number(m[1]),Number(m[2])-1,Number(m[3])):new Date(v);return isNaN(d)?'—':d.toLocaleDateString('pt-BR')};
+const fmtMoney=(v)=>(Number(v||0)/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const esc=(v)=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+
+/* ---- status model (espelha src/lib/budgetStatus.ts) ---- */
+const STATUS_ORDER=['draft','sent','approved','rejected','expired','cancelled'];
+const STATUS_LABELS={draft:'Rascunho',sent:'Enviado',approved:'Aprovado',rejected:'Recusado',expired:'Expirado',cancelled:'Cancelado'};
+const STATUS_PILL={draft:'pill-draft',sent:'pill-sent',approved:'pill-approved',rejected:'pill-rejected',expired:'pill-expired',cancelled:'pill-cancelled'};
+const STATUS_BAR={draft:'#4d5967',sent:'#294e70',approved:'#0d7a4f',rejected:'#a3253c',expired:'#9a7626',cancelled:'#3c4552'};
+function validityDate(b){return addDays(new Date(b.createdAt),b.validityDays||15)}
+function effectiveStatus(b,now=TODAY()){
+  if(b.status!=='sent')return b.status;
+  return validityDate(b)<now?'expired':b.status;
+}
+function pillHtml(status){return `<span class="pill ${STATUS_PILL[status]}">${STATUS_LABELS[status]}</span>`}
+function isCurrentMonth(dateStr,now=TODAY()){
+  if(!dateStr)return false;
+  const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(dateStr);
+  if(!m)return false;
+  return Number(m[1])===now.getFullYear()&&Number(m[2])-1===now.getMonth();
+}
+
+/* ---- modelos de proposta (texto real dos modelos do Total Obras) ---- */
+const TEMPLATES=[{"id":"cadastro_sig_ri","nome":"Cadastro SIG-RI / ONR","category":"Serviços SIG-RI / Cartório","tituloServicoSugerido":"CADASTRO DE IMÓVEL GEORREFERENCIADO NO SIG-RI","objeto":"Prestação de serviços técnicos para adequação cadastral e georreferenciada do imóvel urbano, com estruturação das informações necessárias ao cadastro no SIG-RI/ONR, conforme documentos apresentados pelo contratante.","escopoServicos":"Análise da matrícula e dos documentos fornecidos pelo contratante\nConferência dos dados básicos do imóvel, proprietário e ato registral\nCompatibilização cadastral das informações disponíveis\nTratamento e preparação da base geoespacial do imóvel\nAjuste vetorial e validação geométrica/topológica\nEstruturação dos dados em formato compatível com o SIG-RI/ONR\nVinculação de atributos e metadados necessários ao cadastro\nProtocolo ou inserção técnica no ambiente SIG-RI/ONR\nEmissão e entrega do comprovante de cadastro/protocolo\nEntrega digital dos arquivos finais produzidos\nSuporte técnico até a primeira devolutiva do sistema ou do cartório","metodologiaEntregaveis":"Recebimento e conferência da documentação\nPreparação dos dados cadastrais e do arquivo georreferenciado\nEnvio/cadastro do imóvel no SIG-RI\nConferência do processamento e dos comprovantes\nEntrega de pacote digital em PDF","prazoExecucao":"Prazo estimado para execução dos serviços: 5 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante cartório, ONR, Prefeitura Municipal ou demais órgãos públicos não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Levantamento de campo GNSS/RTK\nLevantamento planialtimétrico\nRetificação administrativa ou judicial de matrícula\nServiços jurídicos\nEmolumentos, taxas e despesas cartorárias\nTaxas de órgãos públicos ou de conselhos profissionais\nART/RRT, salvo quando expressamente incluída\nRegularização de edificações, habite-se ou projetos de construção\nCorreções decorrentes de documentos incorretos, incompletos ou divergentes\nServiços adicionais solicitados após aprovação da proposta","observacoes":"A execução do serviço está condicionada à regularidade e suficiência dos documentos apresentados\nCaso sejam identificadas inconsistências documentais, cadastrais, registrais ou geométricas que impeçam o protocolo ou exijam serviço complementar, o contratante será informado previamente\nExigências posteriores serão analisadas e classificadas\nCorreções decorrentes de erro técnico do serviço contratado serão atendidas sem cobrança adicional\nAlterações de escopo, documentos novos ou serviços não previstos poderão gerar orçamento complementar","validityDays":15},{"id":"instituicao_condominio","nome":"Instituição de Condomínio Edilício","category":"Serviços SIG-RI / Cartório","tituloServicoSugerido":"INSTITUIÇÃO DE CONDOMÍNIO EDILÍCIO","objeto":"Prestação de serviços técnicos para análise, elaboração e organização da documentação necessária à instituição de condomínio edilício, com individualização das unidades autônomas, identificação das áreas de uso comum, cálculo das frações ideais e preparação dos documentos técnicos destinados ao registro imobiliário.","escopoServicos":"Análise da matrícula e da situação registral do imóvel\nConferência do projeto arquitetônico aprovado e dos documentos da edificação\nVerificação da correspondência entre o projeto aprovado, a edificação existente e a matrícula do imóvel\nIdentificação e individualização das unidades autônomas\nIdentificação das áreas privativas, áreas comuns e áreas totais\nIdentificação das vagas de garagem, depósitos, áreas técnicas e demais áreas vinculadas às unidades\nCálculo das frações ideais correspondentes ao terreno e às partes comuns\nDefinição da destinação de cada unidade autônoma\nElaboração dos quadros de áreas conforme a norma técnica aplicável e as exigências do Cartório de Registro de Imóveis\nElaboração do memorial técnico de instituição de condomínio\nElaboração da relação descritiva das unidades autônomas\nPreparação das plantas e peças gráficas necessárias ao processo\nFornecimento dos dados técnicos para elaboração da convenção de condomínio\nOrganização dos documentos para assinatura dos proprietários e responsáveis técnicos\nOrientação para protocolo no Cartório de Registro de Imóveis\nAtendimento às exigências técnicas apresentadas pelo cartório, dentro do escopo contratado\nEntrega dos documentos técnicos finais em formato digital","metodologiaEntregaveis":"Recebimento e conferência dos documentos\nAnálise da matrícula e da situação registral\nAnálise do projeto arquitetônico aprovado\nLevantamento e conferência das áreas\nIndividualização das unidades autônomas\nCálculo das áreas e frações ideais\nElaboração dos quadros técnicos\nElaboração do memorial de instituição\nPreparação das plantas e documentos complementares\nRevisão técnica interna\nApresentação dos documentos ao contratante\nAjustes e aprovação final\nOrganização do processo para protocolo\nAtendimento às exigências técnicas do cartório\nEntrega da documentação final em formato digital","prazoExecucao":"Prazo estimado de 30 dias úteis, contados a partir da assinatura da proposta, confirmação da contratação e entrega integral dos documentos necessários pelo contratante.\nO prazo de análise da Prefeitura, Receita Federal, Cartório de Registro de Imóveis ou demais órgãos externos não integra o prazo de execução.\nO prazo ficará suspenso enquanto houver documentos, informações, assinaturas ou decisões pendentes por parte do contratante.","formaPagamento":"30% dos honorários profissionais na contratação\n40% dos honorários profissionais na apresentação da primeira versão dos documentos técnicos\n30% dos honorários profissionais na entrega da documentação final para protocolo","naoIncluidos":"Taxas e emolumentos do Cartório de Registro de Imóveis\nTaxas municipais, estaduais ou federais\nCertidões emitidas por órgãos públicos ou cartórios\nLevantamento topográfico\nLevantamento arquitetônico da edificação existente\nRegularização de alterações executadas em desacordo com o projeto aprovado\nAprovação ou alteração de projeto perante a Prefeitura\nAverbação da construção\nRetificação de matrícula, área, medidas ou confrontações\nDesmembramento, remembramento ou unificação de imóveis\nIncorporação imobiliária\nElaboração de projetos arquitetônicos ou complementares\nLaudos estruturais, elétricos, hidrossanitários ou de segurança\nElaboração jurídica da convenção de condomínio\nElaboração de regimento interno\nServiços advocatícios, contábeis ou notariais\nReconhecimento de firmas, autenticações e procurações\nDeslocamentos e serviços fora do município inicialmente considerado\nReexecução dos documentos em razão de alterações posteriores solicitadas pelo contratante","observacoes":"A contratação compreende a elaboração da documentação técnica descrita no escopo\nA minuta jurídica da convenção de condomínio deverá ser elaborada ou revisada por profissional habilitado na área jurídica\nA aprovação e o registro dependem da análise do Cartório de Registro de Imóveis e do cumprimento das exigências específicas apresentadas durante o processo\nAlterações no projeto, na quantidade de unidades, nas áreas ou na configuração do empreendimento após o início dos serviços poderão gerar revisão do prazo e dos honorários\nO contratante é responsável pela autenticidade, validade e precisão dos documentos e informações fornecidos\nExigências decorrentes de problemas anteriores na matrícula, na construção ou no projeto aprovado poderão ser objeto de orçamento complementar","validityDays":15},{"id":"desmembramento_urbano","nome":"Desmembramento urbano","category":"Serviços SIG-RI / Cartório","tituloServicoSugerido":"DESMEMBRAMENTO DE IMÓVEL URBANO","objeto":"Prestação de serviços técnicos para elaboração do projeto de desmembramento de imóvel urbano, com divisão da área em lotes independentes, observando matrícula, cadastro imobiliário, parâmetros urbanísticos, legislação municipal vigente e exigências dos órgãos competentes.","escopoServicos":"Análise da matrícula, cadastro imobiliário e documentos fornecidos pelo contratante\nConsulta aos parâmetros urbanísticos aplicáveis ao imóvel\nEstudo de viabilidade para formação dos lotes resultantes\nDefinição técnica da linha de divisão\nElaboração da planta de situação e localização\nElaboração da planta de desmembramento\nQuadro de áreas, dimensões, perímetros e confrontações\nElaboração dos memoriais descritivos dos lotes resultantes\nElaboração dos arquivos técnicos digitais necessários\nEmissão de RRT, quando incluída\nProtocolo e acompanhamento técnico junto à Prefeitura, quando incluído","metodologiaEntregaveis":"Recebimento e conferência da matrícula, cadastro imobiliário e documentos fornecidos\nConsulta aos parâmetros urbanísticos aplicáveis ao imóvel\nElaboração da planta de situação, localização e desmembramento\nElaboração do quadro de áreas e dos memoriais descritivos dos lotes resultantes\nProtocolo e acompanhamento técnico junto à Prefeitura, quando incluído\nEntrega dos arquivos técnicos digitais produzidos","prazoExecucao":"Prazo estimado para execução dos serviços: 10 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante cartório, ONR, Prefeitura Municipal ou demais órgãos públicos não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Emolumentos e despesas de cartório\nRegistro do desmembramento no Cartório de Registro de Imóveis\nServiços jurídicos, tributários ou de regularização de domínio\nRetificação de matrícula\nExtinção de condomínio\nIndividualização de frações ideais\nLevantamento de edificações\nProjetos de regularização, demolição ou aprovação de construções existentes\nLevantamento topográfico, salvo quando expressamente incluído\nAlterações solicitadas após aprovação da proposta","observacoes":"O orçamento considera o desmembramento do imóvel conforme a quantidade de lotes indicada, sem abertura, prolongamento ou modificação do sistema viário\nA aprovação dependerá da viabilidade urbanística, regularidade documental e anuências exigidas\nCaso o município, cartório ou outro órgão solicite serviço não previsto, será apresentado orçamento complementar","validityDays":15},{"id":"remembramento_unificacao","nome":"Remembramento / unificação","category":"Serviços SIG-RI / Cartório","tituloServicoSugerido":"REMEMBRAMENTO E UNIFICAÇÃO DE IMÓVEIS URBANOS","objeto":"Prestação de serviços técnicos para elaboração do projeto de remembramento e unificação de imóveis urbanos, com fusão das matrículas envolvidas em uma única unidade imobiliária, observando cadastro imobiliário, parâmetros urbanísticos, legislação municipal vigente e exigências dos órgãos competentes.","escopoServicos":"Análise das matrículas e documentos fornecidos pelo contratante\nVerificação de confrontações, dimensões e consistência cadastral\nConsulta aos parâmetros urbanísticos aplicáveis\nElaboração da planta de situação e localização\nElaboração da planta de remembramento/unificação\nQuadro de áreas e confrontações do imóvel resultante\nElaboração do memorial descritivo do imóvel unificado\nElaboração dos arquivos técnicos digitais necessários\nEmissão de RRT, quando incluída\nProtocolo e acompanhamento técnico junto à Prefeitura ou Cartório, quando incluído","metodologiaEntregaveis":"Recebimento e conferência das matrículas e documentos fornecidos\nVerificação de confrontações, dimensões e consistência cadastral\nElaboração da planta de situação, localização e remembramento/unificação\nElaboração do memorial descritivo do imóvel resultante\nProtocolo e acompanhamento técnico junto à Prefeitura ou Cartório, quando incluído\nEntrega dos arquivos técnicos digitais produzidos","prazoExecucao":"Prazo estimado para execução dos serviços: 10 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante cartório, ONR, Prefeitura Municipal ou demais órgãos públicos não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Emolumentos e despesas de cartório\nServiços jurídicos ou tributários\nRetificação de matrícula\nLevantamento topográfico, salvo quando expressamente incluído\nProjetos de regularização de edificações\nAlterações solicitadas após aprovação da proposta","observacoes":"O orçamento considera a unificação dos imóveis indicados, sem interferência no sistema viário\nA execução está condicionada à regularidade documental e à inexistência de ônus, litígios ou restrições que impeçam o ato\nCasos que exijam serviço complementar serão informados previamente ao contratante","validityDays":15},{"id":"retificacao_matricula","nome":"Retificação de matrícula","category":"Serviços SIG-RI / Cartório","tituloServicoSugerido":"RETIFICAÇÃO DE MATRÍCULA","objeto":"Prestação de serviços técnicos para elaboração do processo de retificação de matrícula, com levantamento, elaboração de planta e memorial descritivo georreferenciado, conforme exigências do Cartório de Registro de Imóveis e da NBR 14166/INCRA.","escopoServicos":"Análise da matrícula e documentos fornecidos pelo contratante\nLevantamento topográfico da área (quando incluído)\nElaboração da planta georreferenciada do imóvel\nMemorial descritivo com coordenadas e confrontações\nEmissão de ART/RRT\nElaboração do requerimento de retificação\nProtocolo e acompanhamento no Cartório de Registro de Imóveis, quando incluído","metodologiaEntregaveis":"Recebimento e conferência da matrícula e documentos fornecidos\nLevantamento topográfico da área, quando incluído\nElaboração da planta georreferenciada e do memorial descritivo\nElaboração do requerimento de retificação e emissão de ART/RRT\nProtocolo e acompanhamento no Cartório de Registro de Imóveis, quando incluído","prazoExecucao":"Prazo estimado para execução dos serviços: 15 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante o Cartório de Registro de Imóveis não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Emolumentos e despesas cartorárias\nServiços jurídicos\nRegularização de edificações\nAnuência de confrontantes, salvo quando incluída\nResolução de conflitos de confrontação ou litígios\nAlterações solicitadas após aprovação da proposta","observacoes":"O prazo de análise e deferimento pelo Cartório de Registro de Imóveis não integra o prazo de execução dos serviços técnicos\nCaso haja impugnação de confrontantes ou exigências adicionais do cartório, será apresentado orçamento complementar","validityDays":15},{"id":"atendimento_exigencia","nome":"Atendimento de exigência cartorária","category":"Serviços SIG-RI / Cartório","tituloServicoSugerido":"ATENDIMENTO DE EXIGÊNCIA CARTORÁRIA","objeto":"Prestação de serviços técnicos para atendimento de exigência formulada pelo Cartório de Registro de Imóveis, com análise, elaboração de documentação técnica complementar e protocolo de resposta, conforme nota devolutiva apresentada.","escopoServicos":"Análise da nota devolutiva e documentação existente\nIdentificação técnica das correções necessárias\nElaboração ou adequação dos documentos técnicos exigidos\nEmissão de ART/RRT complementar, quando necessário\nProtocolo de resposta à exigência no Cartório de Registro de Imóveis, quando incluído","metodologiaEntregaveis":"Recebimento e análise da nota devolutiva e documentação existente\nIdentificação técnica das correções necessárias\nElaboração ou adequação dos documentos técnicos exigidos\nProtocolo de resposta à exigência, quando incluído","prazoExecucao":"Prazo estimado para execução dos serviços: 7 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante o Cartório de Registro de Imóveis não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Emolumentos e despesas cartorárias\nServiços jurídicos\nNovas exigências decorrentes de análise posterior do cartório\nServiços que extrapolem o escopo da nota devolutiva apresentada\nAlterações solicitadas após aprovação da proposta","observacoes":"O escopo deste orçamento está limitado à exigência constante na nota devolutiva apresentada\nNovas exigências geradas pela análise subsequente do cartório, caso ocorram, serão analisadas e, se necessário, orçadas separadamente","validityDays":15},{"id":"regularizacao_documental","nome":"Regularização documental","category":"Serviços SIG-RI / Cartório","tituloServicoSugerido":"REGULARIZAÇÃO DOCUMENTAL DO IMÓVEL","objeto":"Prestação de serviços técnicos para regularização documental do imóvel, com análise da cadeia dominial, identificação de pendências registrais, cadastrais e documentais, e elaboração dos instrumentos técnicos necessários ao saneamento das irregularidades identificadas.","escopoServicos":"Análise da cadeia dominial e matrícula do imóvel\nLevantamento das pendências registrais, cadastrais e documentais\nElaboração de relatório técnico de diagnóstico\nElaboração dos documentos técnicos necessários ao saneamento identificado\nArticulação com cartório e órgãos competentes, quando incluído\nProtocolo de documentos, quando incluído","metodologiaEntregaveis":"Recebimento e análise da cadeia dominial e matrícula do imóvel\nLevantamento das pendências registrais, cadastrais e documentais\nElaboração do relatório técnico de diagnóstico\nElaboração dos documentos técnicos necessários ao saneamento identificado\nProtocolo de documentos, quando incluído","prazoExecucao":"Prazo estimado para execução dos serviços: 20 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante cartório, ONR, Prefeitura Municipal ou demais órgãos públicos não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Serviços jurídicos, advocatícios ou de inventário\nEmolumentos e despesas cartorárias\nLevantamento topográfico, salvo quando expressamente incluído\nServiços decorrentes de irregularidades não identificadas na fase de diagnóstico\nRegularização de edificações ou obras\nAlterações solicitadas após aprovação da proposta","observacoes":"O orçamento foi elaborado com base nas informações e documentos apresentados pelo contratante\nPendências adicionais identificadas no decorrer dos trabalhos, não previstas na fase de diagnóstico, poderão resultar em orçamento complementar\nServiços jurídicos, quando necessários, são de responsabilidade do contratante","validityDays":15},{"id":"projeto_arquitetonico","nome":"Projeto Arquitetônico","category":"Projetos complementares","tituloServicoSugerido":"PROJETO ARQUITETÔNICO","objeto":"Prestação de serviços técnicos para elaboração do projeto arquitetônico do imóvel, compreendendo as etapas de estudo preliminar, anteprojeto e projeto executivo, observando o programa de necessidades do contratante, a legislação municipal aplicável e as normas técnicas vigentes.","escopoServicos":"Levantamento do programa de necessidades junto ao contratante\nAnálise do terreno, da legislação urbanística e dos parâmetros construtivos aplicáveis\nElaboração do estudo preliminar, com plantas, cortes e volumetria inicial\nElaboração do anteprojeto arquitetônico\nElaboração do projeto executivo, com plantas, cortes, fachadas e detalhamentos necessários à execução da obra\nCompatibilização com os projetos complementares, quando fornecidos pelo contratante ou por terceiros\nElaboração dos memoriais descritivos do projeto arquitetônico\nProtocolo do projeto para aprovação junto à Prefeitura Municipal, quando incluído","metodologiaEntregaveis":"Reunião inicial para levantamento do programa de necessidades\nElaboração e apresentação do estudo preliminar para validação do contratante\nDesenvolvimento do anteprojeto a partir do estudo preliminar aprovado\nDesenvolvimento do projeto executivo e dos memoriais descritivos\nEntrega dos arquivos técnicos digitais e, quando incluído, protocolo para aprovação","prazoExecucao":"Prazo estimado para execução dos serviços: 20 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante a Prefeitura Municipal ou demais órgãos de aprovação não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Levantamento topográfico\nSondagem do solo\nProjetos complementares (estrutural, elétrico, hidrossanitário, PSCIP, acessibilidade), salvo quando expressamente incluídos\nTaxas de aprovação, ART/RRT de terceiros e despesas de órgãos públicos\nExecução da obra, acompanhamento de obra ou assistência técnica de execução, salvo quando expressamente incluídos\nAlterações de projeto solicitadas após a aprovação do anteprojeto","observacoes":"O projeto é desenvolvido com base no programa de necessidades e nas informações fornecidas pelo contratante\nAlterações de escopo ou de programa após a aprovação de cada etapa poderão gerar orçamento complementar\nA aprovação do projeto junto aos órgãos competentes depende da regularidade documental do imóvel","validityDays":15},{"id":"regularizacao_edificacao","nome":"Regularização de Edificação","category":"Projetos complementares","tituloServicoSugerido":"REGULARIZAÇÃO DE EDIFICAÇÃO","objeto":"Prestação de serviços técnicos para regularização de edificação existente, com comparação entre a área aprovada e a área efetivamente construída, identificação das divergências e elaboração das peças técnicas necessárias à sua legalização junto aos órgãos competentes.","escopoServicos":"Análise da matrícula, do Habite-se, do cadastro imobiliário, dos projetos existentes e dos demais documentos fornecidos pelo contratante\nConferência da área aprovada e da área existente in loco, com identificação da área a regularizar\nElaboração das peças técnicas necessárias à regularização, incluindo planta, quadro de áreas e informações técnicas complementares\nCompatibilização da edificação existente com a situação documental apresentada pelo contratante\nElaboração do memorial descritivo da regularização\nEmissão de ART/RRT do responsável técnico\nProtocolo junto à Prefeitura Municipal, quando incluído","metodologiaEntregaveis":"Recebimento e conferência da documentação do imóvel e da edificação existente\nLevantamento e análise da diferença entre a área aprovada e a área existente in loco\nElaboração das peças técnicas de regularização\nElaboração do memorial descritivo e do quadro de áreas\nProtocolo junto ao órgão competente, quando incluído","prazoExecucao":"Prazo estimado para execução dos serviços: 20 a 35 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante a Prefeitura Municipal ou demais órgãos competentes não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Levantamento topográfico ou levantamento cadastral da edificação, salvo quando expressamente incluído\nProjeto arquitetônico, projeto legal ou demais projetos complementares, salvo quando expressamente incluídos\nTaxas municipais, emolumentos, certidões, protocolo e despesas de cartório\nRegistro ou averbação da regularização no Cartório de Registro de Imóveis\nExecução de obras, demolições ou adequações físicas necessárias à regularização\nRetificação de matrícula, desmembramento, remembramento, unificação ou outro procedimento registral distinto deste escopo\nAlterações solicitadas após aprovação da proposta","observacoes":"O orçamento considera a regularização da área excedente ou divergente informada/identificada pelo contratante\nA aprovação da regularização depende da viabilidade urbanística e da regularidade documental do imóvel\nExigências adicionais da Prefeitura ou de outros órgãos, quando não previstas neste escopo, poderão gerar orçamento complementar","validityDays":15},{"id":"projeto_estrutural","nome":"Projeto Estrutural","category":"Projetos complementares","tituloServicoSugerido":"PROJETO ESTRUTURAL","objeto":"Prestação de serviços técnicos para elaboração do projeto estrutural da edificação, compreendendo a definição do sistema estrutural, o dimensionamento dos elementos e a elaboração da documentação técnica necessária à execução da obra, com base no projeto arquitetônico fornecido pelo contratante.","escopoServicos":"Análise do projeto arquitetônico e das cargas previstas para a edificação\nDefinição do sistema estrutural adequado ao projeto\nLançamento e dimensionamento dos elementos estruturais\nElaboração das plantas de formas e de detalhamento estrutural\nElaboração do memorial de cálculo e das especificações técnicas\nEmissão de ART/RRT do responsável técnico pelo projeto estrutural\nCompatibilização com o projeto arquitetônico e demais projetos complementares fornecidos","metodologiaEntregaveis":"Recebimento e análise do projeto arquitetônico e das informações do terreno\nDefinição do sistema estrutural e lançamento da estrutura\nDimensionamento dos elementos e elaboração do memorial de cálculo\nElaboração das plantas de formas e detalhamento\nCompatibilização final e entrega dos arquivos técnicos","prazoExecucao":"Prazo estimado para execução dos serviços: 20 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante a Prefeitura Municipal ou demais órgãos de aprovação não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Sondagem do solo e ensaios geotécnicos\nLevantamento topográfico\nProjeto arquitetônico e demais projetos complementares, salvo quando expressamente incluídos\nExecução da obra ou acompanhamento técnico de execução, salvo quando expressamente incluído\nAlterações decorrentes de modificações no projeto arquitetônico após a aprovação do projeto estrutural","observacoes":"O projeto estrutural é desenvolvido com base no projeto arquitetônico e nas informações fornecidas pelo contratante\nA ausência de sondagem do solo poderá exigir premissas conservadoras de dimensionamento, sujeitas a revisão\nAlterações no projeto arquitetônico após a aprovação da estrutura poderão gerar orçamento complementar","validityDays":15},{"id":"projeto_eletrico","nome":"Projeto Elétrico","category":"Projetos complementares","tituloServicoSugerido":"PROJETO ELÉTRICO","objeto":"Prestação de serviços técnicos para elaboração do projeto elétrico da edificação, compreendendo o dimensionamento das instalações elétricas de baixa tensão, conforme a NBR 5410 e as normas da concessionária local, com base no projeto arquitetônico fornecido pelo contratante.","escopoServicos":"Análise do projeto arquitetônico e do programa de cargas da edificação\nDimensionamento do quadro de cargas e dos circuitos elétricos\nElaboração das plantas de instalações elétricas, incluindo pontos de luz, tomadas e circuitos\nDimensionamento da entrada de energia e do padrão de medição, conforme normas da concessionária\nElaboração do memorial descritivo do projeto elétrico\nEmissão de ART/RRT do responsável técnico pelo projeto elétrico\nProtocolo junto à concessionária de energia, quando incluído","metodologiaEntregaveis":"Recebimento e análise do projeto arquitetônico e do programa de cargas\nDimensionamento dos circuitos, quadros e entrada de energia\nElaboração das plantas e do memorial descritivo\nProtocolo junto à concessionária, quando incluído\nEntrega dos arquivos técnicos digitais","prazoExecucao":"Prazo estimado para execução dos serviços: 15 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante a concessionária de energia ou demais órgãos competentes não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Projeto arquitetônico e demais projetos complementares, salvo quando expressamente incluídos\nProjeto de geração de energia fotovoltaica, salvo quando expressamente incluído\nExecução da instalação elétrica ou acompanhamento técnico de execução, salvo quando expressamente incluído\nTaxas e despesas da concessionária de energia\nAlterações decorrentes de modificações no projeto arquitetônico após a aprovação do projeto elétrico","observacoes":"O projeto elétrico é desenvolvido com base no projeto arquitetônico e no programa de cargas informado pelo contratante\nA aprovação junto à concessionária depende da regularidade documental do imóvel e do padrão de entrada adotado\nAlterações no projeto arquitetônico após a aprovação do projeto elétrico poderão gerar orçamento complementar","validityDays":15},{"id":"projeto_hidrossanitario","nome":"Projeto Hidrossanitário","category":"Projetos complementares","tituloServicoSugerido":"PROJETO HIDROSSANITÁRIO","objeto":"Prestação de serviços técnicos para elaboração do projeto hidrossanitário da edificação, compreendendo os sistemas de água fria, esgoto sanitário e águas pluviais, conforme a NBR 5626, a NBR 8160, a NBR 10844 e as normas da concessionária local, com base no projeto arquitetônico fornecido pelo contratante.","escopoServicos":"Análise do projeto arquitetônico e definição dos pontos de consumo\nDimensionamento do sistema de água fria\nDimensionamento do sistema de esgoto sanitário\nDimensionamento do sistema de águas pluviais\nElaboração das plantas hidrossanitárias e do memorial descritivo\nEmissão de ART/RRT do responsável técnico pelo projeto hidrossanitário\nProtocolo junto à concessionária de saneamento, quando incluído","metodologiaEntregaveis":"Recebimento e análise do projeto arquitetônico e dos pontos de consumo previstos\nDimensionamento dos sistemas de água fria, esgoto e águas pluviais\nElaboração das plantas e do memorial descritivo\nProtocolo junto à concessionária, quando incluído\nEntrega dos arquivos técnicos digitais","prazoExecucao":"Prazo estimado para execução dos serviços: 15 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante a concessionária de saneamento ou demais órgãos competentes não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Projeto arquitetônico e demais projetos complementares, salvo quando expressamente incluídos\nProjeto de reúso de água ou de captação de água pluvial para fins não previstos neste escopo, salvo quando expressamente incluído\nExecução das instalações ou acompanhamento técnico de execução, salvo quando expressamente incluído\nTaxas e despesas da concessionária de saneamento\nAlterações decorrentes de modificações no projeto arquitetônico após a aprovação do projeto hidrossanitário","observacoes":"O projeto hidrossanitário é desenvolvido com base no projeto arquitetônico e nas informações fornecidas pelo contratante\nA aprovação junto à concessionária depende da regularidade documental do imóvel\nAlterações no projeto arquitetônico após a aprovação do projeto hidrossanitário poderão gerar orçamento complementar","validityDays":15},{"id":"projeto_pscip","nome":"Projeto de PSCIP","category":"Projetos complementares","tituloServicoSugerido":"PROJETO DE PREVENÇÃO E COMBATE A INCÊNDIO E PÂNICO (PSCIP)","objeto":"Prestação de serviços técnicos para elaboração do Projeto de Segurança Contra Incêndio e Pânico (PSCIP), compreendendo o dimensionamento dos sistemas de prevenção e combate a incêndio exigidos para a edificação, conforme as Instruções Técnicas do Corpo de Bombeiros e a legislação aplicável, com base no projeto arquitetônico fornecido pelo contratante.","escopoServicos":"Análise do projeto arquitetônico e enquadramento da edificação conforme as Instruções Técnicas aplicáveis\nDefinição das medidas de segurança contra incêndio exigidas para a ocupação e a altura da edificação\nDimensionamento dos sistemas de saídas de emergência, sinalização e iluminação de emergência\nDimensionamento dos sistemas de extintores e, quando exigido, hidrantes e demais sistemas de combate a incêndio\nElaboração das plantas técnicas e do memorial descritivo do PSCIP\nEmissão de ART/RRT do responsável técnico pelo projeto\nProtocolo junto ao Corpo de Bombeiros, quando incluído","metodologiaEntregaveis":"Recebimento e análise do projeto arquitetônico e enquadramento da edificação\nDefinição das medidas de segurança exigidas conforme as Instruções Técnicas aplicáveis\nDimensionamento dos sistemas de prevenção e combate a incêndio\nElaboração das plantas técnicas e do memorial descritivo\nProtocolo junto ao Corpo de Bombeiros, quando incluído","prazoExecucao":"Prazo estimado para execução dos serviços: 15 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante o Corpo de Bombeiros ou demais órgãos competentes não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Projeto arquitetônico e demais projetos complementares, salvo quando expressamente incluídos\nExecução, instalação ou manutenção dos sistemas de combate a incêndio\nVistoria técnica do Corpo de Bombeiros e emissão do Auto de Vistoria (AVCB), salvo quando expressamente incluído\nTaxas e despesas do Corpo de Bombeiros\nAlterações decorrentes de modificações no projeto arquitetônico após a aprovação do PSCIP","observacoes":"O projeto é desenvolvido com base no enquadramento da edificação conforme a ocupação e a altura informadas pelo contratante\nA aprovação junto ao Corpo de Bombeiros depende da regularidade documental do imóvel\nExigências adicionais do Corpo de Bombeiros, quando não previstas neste escopo, poderão gerar orçamento complementar","validityDays":15},{"id":"projeto_acessibilidade","nome":"Projeto de Acessibilidade","category":"Projetos complementares","tituloServicoSugerido":"PROJETO DE ACESSIBILIDADE","objeto":"Prestação de serviços técnicos para elaboração do projeto de acessibilidade da edificação, compreendendo a análise e adequação das rotas acessíveis, conforme a NBR 9050 e a legislação aplicável, com base no projeto arquitetônico fornecido pelo contratante.","escopoServicos":"Análise do projeto arquitetônico quanto aos requisitos de acessibilidade aplicáveis\nDefinição das rotas acessíveis internas e externas da edificação\nVerificação e adequação de rampas, escadas, corrimãos, sanitários e demais elementos conforme a NBR 9050\nElaboração das plantas técnicas de acessibilidade e do memorial descritivo\nEmissão de ART/RRT do responsável técnico pelo projeto\nProtocolo junto aos órgãos competentes, quando incluído","metodologiaEntregaveis":"Recebimento e análise do projeto arquitetônico\nVerificação dos requisitos de acessibilidade aplicáveis à edificação\nDefinição das adequações necessárias e das rotas acessíveis\nElaboração das plantas técnicas e do memorial descritivo\nProtocolo junto aos órgãos competentes, quando incluído","prazoExecucao":"Prazo estimado para execução dos serviços: 10 dias úteis, contados a partir da entrega integral da documentação necessária pelo contratante e da confirmação da contratação.\nO prazo de análise, aprovação ou protocolo perante a Prefeitura Municipal ou demais órgãos competentes não integra o prazo de execução.","formaPagamento":"50% dos honorários profissionais na contratação\n50% dos honorários profissionais na entrega dos documentos/comprovantes contratados","naoIncluidos":"Projeto arquitetônico e demais projetos complementares, salvo quando expressamente incluídos\nExecução das adequações de acessibilidade\nLaudos ou vistorias de terceiros\nAlterações decorrentes de modificações no projeto arquitetônico após a aprovação do projeto de acessibilidade","observacoes":"O projeto é desenvolvido com base no projeto arquitetônico e no uso previsto para a edificação\nA aprovação junto aos órgãos competentes depende da regularidade documental do imóvel\nAlterações no projeto arquitetônico após a aprovação do projeto de acessibilidade poderão gerar orçamento complementar","validityDays":15}];
+
+/* ---- pacotes de serviços (nomes e descrições reais) ---- */
+const PACKAGES=[
+{id:'arquitetura-engenharia',name:'Arquitetura e Engenharia',shortDescription:'Projetos, regularizações, SIG-RI, estruturas, instalações, laudos e acompanhamento de obras.',audience:'Arquitetos, engenheiros e escritórios multidisciplinares.'},
+{id:'topografia',name:'Topografia',shortDescription:'Levantamentos, locação de obras, demarcações, as built e aerolevantamento.',audience:'Topógrafos, técnicos em agrimensura e empresas de levantamento.'},
+{id:'geografia-georreferenciamento',name:'Geografia e Georreferenciamento',shortDescription:'Georreferenciamento, CTM, geoprocessamento, cartografia e estudos territoriais.',audience:'Geógrafos, agrimensores, consultorias territoriais e municípios.'},
+{id:'manutencao-predial',name:'Manutenção Predial',shortDescription:'Manutenção civil, elétrica, hidráulica, inspeções, planos e contratos recorrentes.',audience:'Empresas de facilities, manutenção e conservação predial.'},
+{id:'construcao-civil',name:'Construção Civil',shortDescription:'Orçamento, planejamento, gerenciamento, fiscalização, execução e entrega de obras.',audience:'Construtoras, gerenciadoras, empreiteiros e profissionais de obra.'},
+{id:'consultoria-ambiental',name:'Consultoria Ambiental',shortDescription:'Licenciamento, estudos, planos, gestão ambiental e acompanhamento de condicionantes.',audience:'Consultores e empresas de licenciamento e gestão ambiental.'},
+{id:'servicos-tecnicos-gerais',name:'Serviços Técnicos Gerais',shortDescription:'Estrutura genérica para consultorias, laudos, projetos, visitas e execução de serviços.',audience:'Prestadores de serviços técnicos de diferentes especialidades.'}
+];
+
+/* ---- catálogo de honorários pra montar orçamento ---- */
+const CATALOG=[
+{id:'proj-arq',name:'Projeto Arquitetônico',mode:'m2',unitLabel:'m²',unitValue:45},
+{id:'proj-est',name:'Projeto Estrutural',mode:'m2',unitLabel:'m²',unitValue:28},
+{id:'proj-ele',name:'Projeto Elétrico',mode:'m2',unitLabel:'m²',unitValue:14},
+{id:'proj-hid',name:'Projeto Hidrossanitário',mode:'m2',unitLabel:'m²',unitValue:13},
+{id:'pscip',name:'Projeto de PSCIP',mode:'fixed',unitLabel:'serviço',unitValue:1800},
+{id:'acess',name:'Projeto de Acessibilidade',mode:'fixed',unitLabel:'serviço',unitValue:900},
+{id:'cond',name:'Instituição de Condomínio Edilício',mode:'fixed',unitLabel:'serviço',unitValue:6500},
+{id:'sigri',name:'Cadastro SIG-RI / ONR',mode:'fixed',unitLabel:'serviço',unitValue:650},
+{id:'visita',name:'Visita Técnica',mode:'hour',unitLabel:'hora',unitValue:120}
+];
+
+/* ---- licença e módulos (espelha src/pages/LicensePage.tsx) ---- */
+const FEATURE_NAMES={proposals:'Propostas e orçamentos',clients:'Clientes e imóveis',services:'Catálogo de serviços',templates:'Modelos de proposta',packages:'Pacotes de serviços',pdf_export:'Geração de PDF',backup:'Backup local',financial:'Módulo financeiro',multiple_companies:'Múltiplas empresas',excel_import:'Importação por Excel',openai:'Leitura documental com IA',advanced_reports:'Relatórios avançados',custom_branding:'Personalização visual'};
+const ENABLED_FEATURES=['proposals','clients','services','templates','packages','pdf_export','backup','financial','excel_import','advanced_reports','custom_branding'];
+const LICENSE={plan:'Profissional',situacao:'Ativa',empresas:'1 / 1',computadores:'Até 3',cliente:'Estúdio Meridiano Arquitetura',validade:'—',offlineAte:formatFuture(20),computador:'ESCRITORIO-01 (Windows)',ultimaValidacao:'Hoje, 09:14'};
+function formatFuture(days){return addDays(TODAY(),days).toLocaleDateString('pt-BR')}
+
+/* ---- clientes ---- */
+const seedClients=[
+{id:'c1',name:'Roberto Anselmo Duarte',document:'123.456.789-00',phone:'(67) 99921-1810',email:'roberto@exemplo.com',address:'Rua das Palmeiras, 820 — Dourados/MS'},
+{id:'c2',name:'Fernanda Kellen Torres',document:'987.654.321-00',phone:'(67) 99814-2211',email:'fernanda@exemplo.com',address:'Av. Marcelino Pires, 1.540 — Dourados/MS'},
+{id:'c3',name:'Condomínio Residencial Jardim',document:'12.345.678/0001-90',phone:'(67) 3421-1200',email:'sindico@jardim.com',address:'Rua das Acácias, 250 — Dourados/MS'},
+{id:'c4',name:'Marcos Vinícius Prado',document:'456.789.123-00',phone:'(67) 99672-1001',email:'marcos@exemplo.com',address:'Lote 22, Quadra 3 — Vila Nova, Dourados/MS'}
+];
+
+/* ---- orçamentos de exemplo (6 status, incluindo cancelado) ---- */
+const seedBudgets=[
+{id:'b1',number:'ORC-2026-014',createdAt:'2026-06-03T10:00:00',validityDays:15,client:seedClients[0],tituloServico:'Arquitetura + Elétrica + Hidrossanitária',total:1268000,status:'approved'},
+{id:'b2',number:'ORC-2026-017',createdAt:'2026-07-15T10:00:00',validityDays:15,client:seedClients[0],tituloServico:'Arquitetura + PSCIP',total:758000,status:'approved'},
+{id:'b3',number:'ORC-2026-005',createdAt:'2026-04-28T10:00:00',validityDays:15,client:seedClients[1],tituloServico:'Projeto Hidrossanitário',total:245000,status:'approved'},
+{id:'b4',number:'ORC-2026-015',createdAt:'2026-07-14T10:00:00',validityDays:20,client:seedClients[2],tituloServico:'Instituição de Condomínio Edilício',total:320000,status:'sent'},
+{id:'b5',number:'ORC-2026-011',createdAt:'2026-05-18T10:00:00',validityDays:15,client:seedClients[1],tituloServico:'Arquitetura + Estrutural',total:987000,status:'rejected'},
+{id:'b6',number:'ORC-2026-009',createdAt:'2026-05-02T10:00:00',validityDays:15,client:seedClients[3],tituloServico:'Projeto Arquitetônico',total:540000,status:'sent'},
+{id:'b7',number:'ORC-2026-016',createdAt:'2026-07-10T10:00:00',validityDays:15,client:seedClients[3],tituloServico:'Projeto de Acessibilidade',total:90000,status:'draft'},
+{id:'b8',number:'ORC-2026-008',createdAt:'2026-04-30T10:00:00',validityDays:15,client:seedClients[1],tituloServico:'Retificação de matrícula',total:180000,status:'cancelled'}
+];
+
+/* ---- financeiro ---- */
+const seedReceivables=[
+{id:'r1',budgetNumber:'ORC-2026-014',client:seedClients[0].name,parcelas:[
+  {n:1,valor:634000,venc:'2026-06-20',pago:634000,pagoEm:'2026-06-20'},
+  {n:2,valor:634000,venc:'2026-07-25',pago:0,pagoEm:null}
+]},
+{id:'r2',budgetNumber:'ORC-2026-017',client:seedClients[0].name,parcelas:[{n:1,valor:758000,venc:'2026-07-10',pago:758000,pagoEm:'2026-07-12'}]},
+{id:'r3',budgetNumber:'ORC-2026-005',client:seedClients[1].name,parcelas:[{n:1,valor:245000,venc:'2026-06-15',pago:0,pagoEm:null}]}
+];
+const seedExpenses=[
+{id:'e1',descricao:'Aluguel do escritório',venc:'2026-07-05',valor:120000,pago:true},
+{id:'e2',descricao:'Materiais de escritório',venc:'2026-07-08',valor:18000,pago:true},
+{id:'e3',descricao:'Internet',venc:'2026-07-30',valor:15000,pago:false}
+];
+
+let state=load();
+function load(){try{const base=defaultState();const v=localStorage.getItem(STORAGE);if(!v)return base;const saved=JSON.parse(v);return{...base,...saved,clients:Array.isArray(saved.clients)&&saved.clients.length?saved.clients:base.clients}}catch(e){return defaultState()}}
+function defaultState(){return{budgets:structuredClone(seedBudgets),receivables:structuredClone(seedReceivables),expenses:structuredClone(seedExpenses),clients:structuredClone(seedClients),company:'Estúdio Meridiano Arquitetura'}}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){}}
+let currentPage='dashboard';
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2400)}
+
+/* ================= PAINEL ================= */
+function dashboardPage(){
+  const period=document.getElementById('periodFilter')?.value||'all';
+  const now=TODAY();
+  let list=[...state.budgets];
+  if(period==='30')list=list.filter(b=>new Date(b.createdAt)>=addDays(now,-30));
+  if(period==='90')list=list.filter(b=>new Date(b.createdAt)>=addDays(now,-90));
+  const withStatus=list.map(b=>({...b,eff:effectiveStatus(b,now)}));
+  const emitted=withStatus.filter(b=>b.eff!=='draft');
+  const answered=emitted.filter(b=>['approved','rejected'].includes(b.eff));
+  const approved=emitted.filter(b=>b.eff==='approved');
+  const sent=emitted.filter(b=>b.eff==='sent');
+  const conversion=answered.length?Math.round(approved.length/answered.length*100):0;
+  const approvedValue=approved.reduce((s,b)=>s+b.total,0);
+  const counts=Object.fromEntries(STATUS_ORDER.map(s=>[s,withStatus.filter(b=>b.eff===s).length]));
+  const max=Math.max(1,...Object.values(counts));
+  const upcoming=withStatus.filter(b=>b.eff==='sent').sort((a,b)=>validityDate(a)-validityDate(b)).slice(0,4);
+  const recent=[...withStatus].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,6);
+  return `<div class="page-head"><div><h1>Painel</h1><p>Resumo comercial dos orçamentos — ${esc(state.company)}</p></div>
+    <button class="btn primary" data-nav="new-budget">+ Novo orçamento</button></div>
+    <div class="filters"><div class="field"><label>Período</label><select class="select" id="periodFilter" onchange="__RENDER__()"><option value="30">Últimos 30 dias</option><option value="90" selected>Últimos 90 dias</option><option value="all">Todo o período</option></select></div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Orçamentos emitidos</div><div class="stat-value">${emitted.length}</div><div class="stat-note">excluindo rascunhos</div></div>
+      <div class="stat"><div class="stat-label">Taxa de conversão</div><div class="stat-value" style="color:#0d7a4f">${conversion}%</div><div class="stat-note">${approved.length} aprovados de ${answered.length} respondidos</div></div>
+      <div class="stat"><div class="stat-label">Valor aprovado</div><div class="stat-value">${fmtMoney(approvedValue)}</div><div class="stat-note">soma dos orçamentos aprovados</div></div>
+      <div class="stat"><div class="stat-label">Aguardando resposta</div><div class="stat-value">${sent.length}</div><div class="stat-note">enviados, sem retorno</div></div>
+    </div>
+    <div class="grid-2">
+      <section class="card"><div class="card-pad"><h2 class="card-title">Orçamentos por situação</h2><p class="card-sub">Distribuição dos ${withStatus.length} orçamentos no período.</p>
+        <div class="status-list">${STATUS_ORDER.map(s=>`<div class="status-row"><span class="pill ${STATUS_PILL[s]}">${STATUS_LABELS[s]}</span><div class="bar"><span style="width:${counts[s]/max*100}%;background:${STATUS_BAR[s]}"></span></div><strong>${counts[s]}</strong></div>`).join('')}</div>
+      </div></section>
+      <section class="card"><div class="card-pad"><h2 class="card-title">Propostas a acompanhar</h2><p class="card-sub">Enviadas, ainda dentro do prazo de validade.</p>
+        <div class="alert-list">${upcoming.length?upcoming.map(b=>`<div class="alert"><div><strong>${b.number}</strong><small>${esc(b.client.name)}</small></div><div><strong>${fmtDate(validityDate(b))}</strong></div></div>`).join(''):'<div class="empty">Nenhuma proposta enviada em aberto.</div>'}</div>
+      </div></section>
+    </div>
+    <section class="card"><div class="card-pad" style="display:flex;justify-content:space-between;align-items:center"><div><h2 class="card-title">Orçamentos recentes</h2><p class="card-sub">Últimas propostas criadas ou alteradas.</p></div><button class="btn sm" data-nav="budgets">Ver todos</button></div>
+      <div class="table-wrap"><table class="table"><thead><tr><th>Número</th><th>Cliente / serviço</th><th>Emissão</th><th>Situação</th><th class="amount">Total</th></tr></thead>
+      <tbody>${recent.map(b=>`<tr><td><strong>${b.number}</strong></td><td>${esc(b.client.name)}<br><small style="color:var(--muted)">${esc(b.tituloServico)}</small></td><td>${fmtDate(b.createdAt)}</td><td>${pillHtml(b.eff)}</td><td class="amount"><strong>${fmtMoney(b.total)}</strong></td></tr>`).join('')}</tbody></table></div>
+    </section>`;
+}
+
+/* ================= ORÇAMENTOS ================= */
+function budgetsPage(){
+  const q=(document.getElementById('budgetSearch')?.value||'').toLowerCase();
+  const statusFilter=document.getElementById('budgetStatus')?.value||'all';
+  const now=TODAY();
+  let list=state.budgets.map(b=>({...b,eff:effectiveStatus(b,now)})).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  list=list.filter(b=>(statusFilter==='all'||b.eff===statusFilter)&&(!q||[b.number,b.client.name,b.tituloServico].join(' ').toLowerCase().includes(q)));
+  return `<div class="page-head"><div><h1>Orçamentos</h1><p>Consulte propostas, altere a situação e acompanhe a validade.</p></div>
+    <button class="btn primary" data-nav="new-budget">+ Novo orçamento</button></div>
+    <div class="filters"><div class="field grow"><label>Buscar</label><input class="input" id="budgetSearch" placeholder="Cliente, número ou serviço..." oninput="__RENDER__()" value="${esc(document.getElementById('budgetSearch')?.value||'')}"></div>
+    <div class="field"><label>Situação</label><select class="select" id="budgetStatus" onchange="__RENDER__()"><option value="all">Todas</option>${STATUS_ORDER.map(s=>`<option value="${s}">${STATUS_LABELS[s]}</option>`).join('')}</select></div></div>
+    ${list.length===0?`<div class="card"><div class="empty">Nenhum orçamento encontrado.</div></div>`:`
+    <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Número</th><th>Cliente / serviço</th><th>Emissão</th><th>Validade</th><th>Situação</th><th class="amount">Total</th><th></th></tr></thead>
+    <tbody>${list.map(b=>`<tr><td><strong>${b.number}</strong></td><td>${esc(b.client.name)}<br><small style="color:var(--muted)">${esc(b.tituloServico)}</small></td><td>${fmtDate(b.createdAt)}</td>
+      <td${b.eff==='expired'?' style="color:#9a7626;font-weight:700"':''}>${fmtDate(validityDate(b))}</td>
+      <td><select class="select" style="padding:5px 8px;font-size:12px" onchange="__SETSTATUS__('${b.id}',this.value)">${STATUS_ORDER.map(s=>`<option value="${s}" ${s===b.eff?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}</select></td>
+      <td class="amount"><strong>${fmtMoney(b.total)}</strong></td>
+      <td><div style="display:flex;gap:8px;white-space:nowrap"><button class="btn link" onclick="__VIEW__('${b.id}')">Ver/PDF</button><button class="btn link" onclick="__DUP__('${b.id}')">Duplicar</button><button class="btn link" style="color:#c0273f" onclick="__DEL__('${b.id}')">Excluir</button></div></td>
+    </tr>`).join('')}</tbody></table></div></div>`}`;
+}
+window.__SETSTATUS__=(id,status)=>{const b=state.budgets.find(x=>x.id===id);if(b){b.status=status;save();toast('Situação atualizada.');render()}};
+window.__DUP__=(id)=>{const b=state.budgets.find(x=>x.id===id);if(!b)return;const n=Math.max(...state.budgets.map(x=>Number(x.number.split('-').pop())||0))+1;
+  state.budgets.push({...b,id:'b'+Date.now(),number:`ORC-2026-${String(n).padStart(3,'0')}`,createdAt:iso(TODAY())+'T09:00:00',status:'draft'});save();toast('Orçamento duplicado com os dados atuais.');render()};
+window.__DEL__=(id)=>{if(!confirm('Excluir este orçamento? Essa ação não pode ser desfeita.'))return;state.budgets=state.budgets.filter(b=>b.id!==id);save();toast('Orçamento excluído.');render()};
+window.__VIEW__=(id)=>{navigate('new-budget');wizardState.viewOnly=id;renderWizardFromBudget(id)};
+
+/* ================= NOVO ORÇAMENTO (assistente em 5 etapas) ================= */
+const DEMO_RESPONSIBLES=[
+  {id:'resp-1',name:'Ana Beatriz Meridiano',role:'Arquiteta e Urbanista · CAU A00000-0'},
+  {id:'resp-2',name:'Carlos Almeida',role:'Engenheiro Civil · CREA 000000/D'}
+];
+function freshWizard(){
+  const clients=(state&&Array.isArray(state.clients)&&state.clients.length)?state.clients:seedClients;
+  return{
+    step:1,
+    client:clients[0],
+    newClientOpen:false,
+    saveNewClient:true,
+    draftClient:{name:'',document:'',phone:'',email:'',address:''},
+    property:{address:'Rua das Palmeiras, 820 — Dourados/MS',matricula:'12.345',inscricao:'000.000.000',lote:'12',quadra:'04',terreno:450,area:120,observations:''},
+    templateIds:[],services:[],items:[],additionalCosts:[],nonIncluded:[],
+    closing:{payment:'50% dos honorários na contratação\n50% na entrega dos documentos contratados',deadline:'20 dias úteis após a entrega integral da documentação',validityDays:15,observations:'',discount:0,responsibleIds:['resp-1']},
+    savedBudgetId:null,savedNumber:null,viewOnly:null
+  }
+}
+let wizardState=freshWizard();
+const uid=(prefix='id')=>`${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+const splitLines=(v)=>String(v||'').split('\n').map(x=>x.trim()).filter(Boolean);
+const moneyInput=(v)=>Number(v||0).toFixed(2);
+function serviceFromTemplate(t){return{id:t.id,name:t.nome,title:t.tituloServicoSugerido,objeto:t.objeto,scope:t.escopoServicos,methodology:t.metodologiaEntregaveis,deadline:t.prazoExecucao,payment:t.formaPagamento,observations:t.observacoes,sourceNonIncluded:splitLines(t.naoIncluidos),custom:false}}
+function selectedTemplate(id){return TEMPLATES.find(t=>t.id===id)}
+function syncNonIncluded(){
+  const suggested=[...new Set(wizardState.services.flatMap(s=>s.sourceNonIncluded||[]))];
+  const existing=new Map(wizardState.nonIncluded.filter(x=>!x.custom).map(x=>[x.original||x.text,x]));
+  const custom=wizardState.nonIncluded.filter(x=>x.custom);
+  wizardState.nonIncluded=suggested.map(t=>existing.get(t)||{id:uid('ni'),text:t,original:t,enabled:true,custom:false}).concat(custom);
+}
+function itemTotal(it){return Math.max(0,Number(it.qty)||0)*Math.max(0,Number(it.unitValue)||0)}
+function feesSubtotalReais(){return (wizardState.items||[]).reduce((sum,it)=>sum+itemTotal(it),0)}
+function costsSubtotalReais(){return (wizardState.additionalCosts||[]).reduce((sum,it)=>sum+itemTotal(it),0)}
+function subtotalReais(){return feesSubtotalReais()+costsSubtotalReais()}
+function totalReais(){return Math.max(0,subtotalReais()*(1-(Number(wizardState.closing.discount)||0)/100))}
+function proposalTitle(){return wizardState.services.map(s=>s.title||s.name).filter(Boolean).join(' + ')||'PROPOSTA TÉCNICA E COMERCIAL'}
+function safeClient(){return wizardState.client||{name:'Cliente não informado',document:'',phone:'',email:'',address:''}}
+function currentNumber(){return wizardState.savedNumber||'DEMO-PRÉVIA'}
+
+window.__TOGGLETPL__=(id)=>{
+  const idx=wizardState.templateIds.indexOf(id);
+  if(idx>-1){wizardState.templateIds.splice(idx,1);wizardState.services=wizardState.services.filter(s=>s.id!==id)}
+  else{const t=selectedTemplate(id);if(t){wizardState.templateIds.push(id);wizardState.services.push(serviceFromTemplate(t));if(wizardState.services.length===1){wizardState.closing.payment=t.formaPagamento;wizardState.closing.deadline=t.prazoExecucao}}}
+  syncNonIncluded();renderInto();
+};
+window.__WSTEP__=(n)=>{
+  n=Math.max(1,Math.min(5,Number(n)||1));
+  if(n>wizardState.step){
+    if(wizardState.step===1&&!safeClient().name){toast('Selecione ou cadastre um cliente.');return}
+    if(wizardState.step===2&&!wizardState.services.length){toast('Selecione ao menos um modelo ou adicione um serviço personalizado.');return}
+    if(wizardState.step===3&&!wizardState.items.length){toast('Adicione ao menos um item de honorários.');return}
+  }
+  wizardState.step=n;renderInto();
+};
+window.__SETCLIENT__=(id)=>{const c=state.clients.find(x=>x.id===id);if(c)wizardState.client=c;updatePreview()};
+window.__NEWCLIENTTOGGLE__=()=>{wizardState.newClientOpen=!wizardState.newClientOpen;renderInto()};
+window.__NEWCLIENTFIELD__=(key,value)=>{wizardState.draftClient[key]=value};
+window.__USENEWCLIENT__=()=>{
+  const c={...wizardState.draftClient,id:uid('client')};
+  if(!c.name.trim()){toast('Informe o nome do novo cliente.');return}
+  if(wizardState.saveNewClient){state.clients.push(c);save()}
+  wizardState.client=c;wizardState.newClientOpen=false;wizardState.draftClient={name:'',document:'',phone:'',email:'',address:''};renderInto();toast(wizardState.saveNewClient?'Cliente cadastrado e selecionado.':'Cliente aplicado somente neste orçamento.');
+};
+window.__PROP__=(key,value)=>{wizardState.property[key]=['terreno','area'].includes(key)?Number(value)||0:value;updatePreview()};
+window.__ADDCUSTOMSERVICE__=()=>{wizardState.services.push({id:uid('custom-service'),name:'Serviço personalizado',title:'NOVO SERVIÇO TÉCNICO',objeto:'Descreva o objeto da contratação.',scope:'Adicionar item do escopo',methodology:'Descrever metodologia e entregáveis',deadline:'Definir prazo de execução',payment:wizardState.closing.payment,observations:'',sourceNonIncluded:[],custom:true});renderInto()};
+window.__DELSERVICE__=(idx)=>{const [removed]=wizardState.services.splice(idx,1);if(removed&&!removed.custom)wizardState.templateIds=wizardState.templateIds.filter(id=>id!==removed.id);syncNonIncluded();renderInto()};
+window.__SERVFIELD__=(idx,key,value)=>{if(wizardState.services[idx])wizardState.services[idx][key]=value;updatePreview()};
+window.__RESTORESERVICE__=(idx)=>{const s=wizardState.services[idx];const t=s&&!s.custom?selectedTemplate(s.id):null;if(!t){toast('Serviços personalizados não possuem modelo original.');return}wizardState.services[idx]=serviceFromTemplate(t);syncNonIncluded();renderInto();toast('Texto restaurado a partir do modelo.')};
+window.__ADDITEM__=()=>{const sel=document.getElementById('catalogSelect');const svc=CATALOG.find(s=>s.id===sel?.value);if(!svc)return;const qty=svc.mode==='m2'?(Number(wizardState.property.area)||1):(svc.mode==='hour'?1:1);wizardState.items.push({id:uid('fee'),name:svc.name,qty,unitLabel:svc.unitLabel,unitValue:Number(svc.unitValue)||0,objective:`Honorários referentes a ${svc.name.toLowerCase()}.`});renderInto()};
+window.__ADDCUSTOMITEM__=()=>{wizardState.items.push({id:uid('fee'),name:'Item personalizado',qty:1,unitLabel:'serviço',unitValue:0,objective:''});renderInto()};
+window.__RMITEM__=(idx)=>{wizardState.items.splice(idx,1);renderInto()};
+window.__ITEMFIELD__=(idx,key,value)=>{const it=wizardState.items[idx];if(!it)return;it[key]=['qty','unitValue'].includes(key)?Number(value)||0:value;updatePreview();const total=document.getElementById(`fee-total-${idx}`);if(total)total.textContent=fmtMoney(itemTotal(it)*100);refreshFinancialSummary()};
+window.__ADDCOST__=()=>{(wizardState.additionalCosts??=[]).push({id:uid('cost'),name:'Custo adicional',qty:1,unitLabel:'unidade',unitValue:0,notes:''});renderInto()};
+window.__RMCOST__=(idx)=>{(wizardState.additionalCosts??=[]).splice(idx,1);renderInto()};
+window.__COSTFIELD__=(idx,key,value)=>{const it=(wizardState.additionalCosts||[])[idx];if(!it)return;it[key]=['qty','unitValue'].includes(key)?Number(value)||0:value;updatePreview();const total=document.getElementById(`cost-total-${idx}`);if(total)total.textContent=fmtMoney(itemTotal(it)*100);refreshFinancialSummary()};
+function refreshFinancialSummary(){
+  const fee=document.getElementById('fee-subtotal');if(fee)fee.textContent=fmtMoney(feesSubtotalReais()*100);
+  const cost=document.getElementById('cost-subtotal');if(cost)cost.textContent=fmtMoney(costsSubtotalReais()*100);
+  const subtotal=document.getElementById('proposal-subtotal');if(subtotal)subtotal.textContent=fmtMoney(subtotalReais()*100);
+  const total=document.getElementById('fee-summary');if(total)total.textContent=fmtMoney(totalReais()*100);
+}
+window.__NIADD__=()=>{wizardState.nonIncluded.push({id:uid('ni'),text:'Novo item não incluso',enabled:true,custom:true});renderInto()};
+window.__NIFIELD__=(idx,key,value)=>{const it=wizardState.nonIncluded[idx];if(!it)return;it[key]=key==='enabled'?Boolean(value):value;updatePreview()};
+window.__NIREMOVE__=(idx)=>{wizardState.nonIncluded.splice(idx,1);renderInto()};
+window.__CLOSEFIELD__=(key,value)=>{wizardState.closing[key]=['validityDays','discount'].includes(key)?Number(value)||0:value;updatePreview()};
+window.__RESP__=(id,checked)=>{const list=wizardState.closing.responsibleIds;wizardState.closing.responsibleIds=checked?[...new Set([...list,id])]:list.filter(x=>x!==id);updatePreview()};
+
+function especialidadesGrid(){return TEMPLATES.map(t=>`<label class="chk-item ${wizardState.templateIds.includes(t.id)?'on':''}"><input type="checkbox" ${wizardState.templateIds.includes(t.id)?'checked':''} onchange="__TOGGLETPL__('${t.id}')" style="margin-top:2px"><span><strong>${esc(t.nome)}</strong><br><span class="mini-note">${esc(t.category)}</span></span></label>`).join('')}
+function step1Html(){
+  const c=safeClient(),p=wizardState.property;
+  return `<div class="inline-head"><div><h3>Cliente</h3><div class="mini-note">Selecione um cadastro existente ou inclua um cliente sem sair do orçamento.</div></div><button class="btn sm" onclick="__NEWCLIENTTOGGLE__()">${wizardState.newClientOpen?'Fechar cadastro':'+ Novo cliente'}</button></div>
+  <div class="field"><label>Cliente existente</label><select class="select" onchange="__SETCLIENT__(this.value)">${state.clients.map(x=>`<option value="${x.id}" ${x.id===c.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div>
+  ${wizardState.newClientOpen?`<div class="inline-panel"><div class="form-grid">
+    <div class="field"><label>Nome / razão social</label><input class="input" value="${esc(wizardState.draftClient.name)}" oninput="__NEWCLIENTFIELD__('name',this.value)"></div>
+    <div class="field"><label>CPF / CNPJ</label><input class="input" value="${esc(wizardState.draftClient.document)}" oninput="__NEWCLIENTFIELD__('document',this.value)"></div>
+    <div class="field"><label>Telefone</label><input class="input" value="${esc(wizardState.draftClient.phone)}" oninput="__NEWCLIENTFIELD__('phone',this.value)"></div>
+    <div class="field"><label>E-mail</label><input class="input" value="${esc(wizardState.draftClient.email)}" oninput="__NEWCLIENTFIELD__('email',this.value)"></div>
+    <div class="field wide"><label>Endereço do cliente</label><input class="input" value="${esc(wizardState.draftClient.address)}" oninput="__NEWCLIENTFIELD__('address',this.value)"></div>
+  </div><label style="display:flex;gap:8px;align-items:center;margin:12px 0"><input type="checkbox" ${wizardState.saveNewClient?'checked':''} onchange="wizardState.saveNewClient=this.checked"> Salvar no cadastro de clientes</label><button class="btn primary" onclick="__USENEWCLIENT__()">Usar este cliente</button></div>`:''}
+  <div class="inline-panel"><div class="inline-head"><div><h3>Dados do imóvel</h3><div class="mini-note">Os dados permanecem vinculados à proposta.</div></div></div>
+    <div class="form-grid">
+      <div class="field wide"><label>Endereço do imóvel</label><input class="input" value="${esc(p.address)}" oninput="__PROP__('address',this.value)"></div>
+      <div class="field"><label>Matrícula</label><input class="input" value="${esc(p.matricula)}" oninput="__PROP__('matricula',this.value)"></div>
+      <div class="field"><label>Inscrição imobiliária</label><input class="input" value="${esc(p.inscricao)}" oninput="__PROP__('inscricao',this.value)"></div>
+      <div class="field"><label>Lote</label><input class="input" value="${esc(p.lote)}" oninput="__PROP__('lote',this.value)"></div>
+      <div class="field"><label>Quadra</label><input class="input" value="${esc(p.quadra)}" oninput="__PROP__('quadra',this.value)"></div>
+      <div class="field"><label>Área do terreno (m²)</label><input class="input" type="number" value="${p.terreno}" oninput="__PROP__('terreno',this.value)"></div>
+      <div class="field"><label>Área construída (m²)</label><input class="input" type="number" value="${p.area}" oninput="__PROP__('area',this.value)"></div>
+      <div class="field wide"><label>Observações do imóvel</label><textarea class="textarea" oninput="__PROP__('observations',this.value)">${esc(p.observations)}</textarea></div>
+    </div>
+  </div>`;
+}
+function serviceEditorHtml(s,idx){return `<details class="service-editor" ${idx===0?'open':''}><summary><span>${esc(s.name)}</span><span class="mini-note">Clique para editar o conteúdo</span></summary><div class="service-editor-body">
+  <div class="form-grid">
+    <div class="field wide"><label>Título do serviço</label><input class="input" value="${esc(s.title)}" oninput="__SERVFIELD__(${idx},'title',this.value)"></div>
+    <div class="field wide"><label>Objeto</label><textarea class="textarea" style="min-height:110px" oninput="__SERVFIELD__(${idx},'objeto',this.value)">${esc(s.objeto)}</textarea></div>
+    <div class="field wide"><label>Escopo dos serviços — um item por linha</label><textarea class="textarea" style="min-height:170px" oninput="__SERVFIELD__(${idx},'scope',this.value)">${esc(s.scope)}</textarea></div>
+    <div class="field wide"><label>Metodologia e entregáveis — um item por linha</label><textarea class="textarea" style="min-height:145px" oninput="__SERVFIELD__(${idx},'methodology',this.value)">${esc(s.methodology)}</textarea></div>
+    <div class="field wide"><label>Prazo específico</label><textarea class="textarea" oninput="__SERVFIELD__(${idx},'deadline',this.value)">${esc(s.deadline)}</textarea></div>
+    <div class="field wide"><label>Forma de pagamento sugerida</label><textarea class="textarea" oninput="__SERVFIELD__(${idx},'payment',this.value)">${esc(s.payment)}</textarea></div>
+    <div class="field wide"><label>Observações do serviço</label><textarea class="textarea" oninput="__SERVFIELD__(${idx},'observations',this.value)">${esc(s.observations)}</textarea></div>
+  </div><div class="service-actions" style="margin-top:12px"><button class="btn sm danger" onclick="__DELSERVICE__(${idx})">Excluir serviço</button><button class="btn sm" onclick="__RESTORESERVICE__(${idx})">Restaurar modelo</button></div>
+</div></details>`}
+function step2Html(){return `<div class="inline-head"><div><h3>Modelos e textos da proposta</h3><div class="mini-note">Marque os modelos. A cópia inserida no orçamento pode ser alterada sem modificar o modelo original.</div></div><button class="btn sm primary" onclick="__ADDCUSTOMSERVICE__()">+ Serviço personalizado</button></div>
+<div class="chk-grid">${especialidadesGrid()}</div>
+${wizardState.services.length?`<div style="margin-top:16px"><h3 style="font-size:14px;margin:0">Conteúdo selecionado e editável</h3>${wizardState.services.map(serviceEditorHtml).join('')}</div>`:'<div class="empty">Selecione um modelo ou adicione um serviço personalizado.</div>'}`}
+function step3Html(){return `<div class="inline-head"><div><h3>Honorários</h3><div class="mini-note">Ajuste descrição, quantidade, unidade e valor conforme a necessidade.</div></div><div style="display:flex;gap:8px"><button class="btn sm" onclick="__ADDCUSTOMITEM__()">+ Item livre</button></div></div>
+<div style="display:flex;gap:8px;align-items:end;margin-bottom:14px"><div class="field grow"><label>Serviço do catálogo</label><select class="select" id="catalogSelect">${CATALOG.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div><button class="btn primary" onclick="__ADDITEM__()">Adicionar</button></div>
+<div class="table-wrap"><table class="table fee-table"><thead><tr><th>Serviço</th><th>Qtd.</th><th>Unidade</th><th class="amount">Valor unitário</th><th class="amount">Total</th><th></th></tr></thead><tbody>
+${wizardState.items.map((it,i)=>`<tr><td><input class="input" value="${esc(it.name)}" oninput="__ITEMFIELD__(${i},'name',this.value)"></td><td><input class="input" type="number" step="0.01" value="${it.qty}" oninput="__ITEMFIELD__(${i},'qty',this.value)"></td><td><input class="input" value="${esc(it.unitLabel)}" oninput="__ITEMFIELD__(${i},'unitLabel',this.value)"></td><td><input class="input amount" type="number" step="0.01" value="${moneyInput(it.unitValue)}" oninput="__ITEMFIELD__(${i},'unitValue',this.value)"></td><td class="amount"><strong id="fee-total-${i}">${fmtMoney(itemTotal(it)*100)}</strong></td><td><button class="btn link" style="color:#c0273f" onclick="__RMITEM__(${i})">Excluir</button></td></tr>
+<tr class="fee-objective"><td colspan="6"><div class="field"><label>Objetivo / descrição deste item</label><textarea class="textarea" style="min-height:58px" oninput="__ITEMFIELD__(${i},'objective',this.value)">${esc(it.objective||'')}</textarea></div></td></tr>`).join('')||'<tr><td colspan="6"><div class="empty">Nenhum item de honorários adicionado.</div></td></tr>'}
+</tbody></table></div>
+<div class="section-divider"><div><h3>Custos adicionais</h3><div class="mini-note">Inclua deslocamentos, taxas, impressões, diárias, levantamentos de terceiros ou outras despesas repassadas ao cliente.</div></div><button class="btn sm" onclick="__ADDCOST__()">+ Custo adicional</button></div>
+<div class="table-wrap"><table class="table fee-table cost-table"><thead><tr><th>Descrição</th><th>Qtd.</th><th>Unidade</th><th class="amount">Valor unitário</th><th class="amount">Total</th><th></th></tr></thead><tbody>
+${(wizardState.additionalCosts||[]).map((it,i)=>`<tr><td><input class="input" value="${esc(it.name)}" oninput="__COSTFIELD__(${i},'name',this.value)"></td><td><input class="input" type="number" step="0.01" value="${it.qty}" oninput="__COSTFIELD__(${i},'qty',this.value)"></td><td><input class="input" value="${esc(it.unitLabel)}" oninput="__COSTFIELD__(${i},'unitLabel',this.value)"></td><td><input class="input amount" type="number" step="0.01" value="${moneyInput(it.unitValue)}" oninput="__COSTFIELD__(${i},'unitValue',this.value)"></td><td class="amount"><strong id="cost-total-${i}">${fmtMoney(itemTotal(it)*100)}</strong></td><td><button class="btn link" style="color:#c0273f" onclick="__RMCOST__(${i})">Excluir</button></td></tr>
+<tr class="fee-objective"><td colspan="6"><div class="field"><label>Observação do custo</label><textarea class="textarea" style="min-height:52px" placeholder="Ex.: deslocamento fora do município, taxa estimada ou serviço terceirizado." oninput="__COSTFIELD__(${i},'notes',this.value)">${esc(it.notes||'')}</textarea></div></td></tr>`).join('')||'<tr><td colspan="6"><div class="empty">Nenhum custo adicional informado.</div></td></tr>'}
+</tbody></table></div>
+<div class="financial-summary"><div><span>Subtotal de honorários</span><strong id="fee-subtotal">${fmtMoney(feesSubtotalReais()*100)}</strong></div><div><span>Custos adicionais</span><strong id="cost-subtotal">${fmtMoney(costsSubtotalReais()*100)}</strong></div><div><span>Subtotal da proposta</span><strong id="proposal-subtotal">${fmtMoney(subtotalReais()*100)}</strong></div><div class="total-line"><span>Total após desconto</span><strong id="fee-summary">${fmtMoney(totalReais()*100)}</strong></div></div>`}
+function step4Html(){return `<div class="inline-head"><div><h3>Itens não inclusos e fechamento</h3><div class="mini-note">Desmarque, edite, exclua ou acrescente itens.</div></div><button class="btn sm" onclick="__NIADD__()">+ Novo item</button></div>
+<div class="edit-list">${wizardState.nonIncluded.map((it,i)=>`<div class="edit-row"><input type="checkbox" ${it.enabled?'checked':''} onchange="__NIFIELD__(${i},'enabled',this.checked)"><input class="input" value="${esc(it.text)}" oninput="__NIFIELD__(${i},'text',this.value)"><button class="btn link" style="color:#c0273f" onclick="__NIREMOVE__(${i})">Excluir</button></div>`).join('')||'<div class="empty">Nenhum item não incluso. Use “Novo item” para adicionar.</div>'}</div>
+<div class="inline-panel"><div class="close-grid">
+  <div class="field wide"><label>Forma de pagamento</label><textarea class="textarea" oninput="__CLOSEFIELD__('payment',this.value)">${esc(wizardState.closing.payment)}</textarea></div>
+  <div class="field wide"><label>Prazo de execução</label><textarea class="textarea" oninput="__CLOSEFIELD__('deadline',this.value)">${esc(wizardState.closing.deadline)}</textarea></div>
+  <div class="field"><label>Validade da proposta (dias)</label><input class="input" type="number" value="${wizardState.closing.validityDays}" oninput="__CLOSEFIELD__('validityDays',this.value)"></div>
+  <div class="field"><label>Desconto (%)</label><input class="input" type="number" min="0" max="100" step="0.01" value="${wizardState.closing.discount}" oninput="__CLOSEFIELD__('discount',this.value)"></div>
+  <div class="field wide"><label>Observações finais</label><textarea class="textarea" oninput="__CLOSEFIELD__('observations',this.value)">${esc(wizardState.closing.observations)}</textarea></div>
+  <div class="field wide"><label>Responsáveis exibidos no rodapé</label><div class="responsible-list">${DEMO_RESPONSIBLES.map(r=>`<label class="responsible-item"><input type="checkbox" ${wizardState.closing.responsibleIds.includes(r.id)?'checked':''} onchange="__RESP__('${r.id}',this.checked)"><span><strong>${esc(r.name)}</strong><br><span class="mini-note">${esc(r.role)}</span></span></label>`).join('')}</div></div>
+</div></div>`}
+function step5Html(){return `<div class="final-actions no-print"><button class="btn" onclick="__WSTEP__(4)">← Voltar e editar</button><button class="btn" onclick="__SAVEBUDGET__('draft')">Salvar como rascunho</button><button class="btn primary" onclick="__PRINTPROPOSAL__()">Gerar PDF demonstrativo</button><button class="btn gold" onclick="__SAVEBUDGET__('sent')">Salvar e marcar como enviado</button></div>${finalDocumentHtml(currentNumber())}`}
+function wizardBody(){return wizardState.step===1?step1Html():wizardState.step===2?step2Html():wizardState.step===3?step3Html():wizardState.step===4?step4Html():step5Html()}
+function newBudgetPage(){
+  const steps=['Cliente e imóvel','Serviços e textos','Honorários','Não inclusos','Proposta'];
+  const stepsNav=steps.map((label,i)=>{const n=i+1,cls=wizardState.step===n?'active':wizardState.step>n?'done':'future';return `<button class="step-chip ${cls}" ${n>wizardState.step+1?'disabled':''} onclick="__WSTEP__(${n})">${n} · ${label}</button>`}).join('');
+  const full=wizardState.step===5;
+  return `<div class="page-head"><div><h1>Novo orçamento</h1><p>Use os modelos, ajuste o conteúdo e gere uma proposta completa.</p></div><button class="btn danger" onclick="__RESETWIZARD__()">Limpar orçamento</button></div>
+  <div class="card"><div class="card-pad"><div class="steps-nav">${stepsNav}</div>
+  ${full?wizardBody():`<div class="wizard-layout"><div class="wizard-main">${wizardBody()}<div class="step-actions"><button class="btn" onclick="__WSTEP__(${wizardState.step-1})" ${wizardState.step===1?'disabled':''}>← Voltar</button><button class="btn primary" onclick="__WSTEP__(${wizardState.step+1})">Avançar →</button></div></div><aside class="preview-pane wizard-preview"><h4>Prévia da proposta</h4><div class="preview-doc" id="livePreview">${previewHtml()}</div></aside></div>`}
+  </div></div>`;
+}
+window.__RESETWIZARD__=()=>{wizardState=freshWizard();renderInto();toast('Novo orçamento limpo.')};
+function updatePreview(){const el=document.getElementById('livePreview');if(el)el.innerHTML=previewHtml()}
+function previewHtml(){
+  const c=safeClient(),p=wizardState.property;
+  let html=`<h5>Cliente e imóvel</h5><strong>${esc(c.name)}</strong><div class="preview-muted">${esc(p.address||'Endereço do imóvel não informado')} · ${Number(p.terreno)||0} m² de terreno · ${Number(p.area)||0} m² construída</div>`;
+  if(!wizardState.services.length)html+=`<div class="preview-section"><p class="preview-muted"><em>Selecione modelos na etapa 2 para montar o conteúdo.</em></p></div>`;
+  wizardState.services.forEach((s,idx)=>{html+=`<div class="preview-section"><h5>${idx+1}. ${esc(s.title||s.name)}</h5><p>${esc(s.objeto)}</p><strong>Escopo</strong><ul>${splitLines(s.scope).slice(0,5).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${splitLines(s.scope).length>5?`<div class="preview-muted">+ ${splitLines(s.scope).length-5} item(ns)</div>`:''}</div>`});
+  if(wizardState.items.length||(wizardState.additionalCosts||[]).length){html+=`<div class="preview-section"><h5>Honorários e custos</h5>${wizardState.items.map(it=>`<div style="display:flex;justify-content:space-between;gap:8px;margin:5px 0"><span>${esc(it.name)}</span><strong>${fmtMoney(itemTotal(it)*100)}</strong></div>`).join('')}${(wizardState.additionalCosts||[]).length?`<div class="preview-muted" style="margin-top:8px;font-weight:800">Custos adicionais</div>${wizardState.additionalCosts.map(it=>`<div style="display:flex;justify-content:space-between;gap:8px;margin:5px 0"><span>${esc(it.name)}</span><strong>${fmtMoney(itemTotal(it)*100)}</strong></div>`).join('')}`:''}<div class="doc-total"><span>Total</span><span>${fmtMoney(totalReais()*100)}</span></div></div>`}
+  const ni=wizardState.nonIncluded.filter(x=>x.enabled&&x.text.trim());if(ni.length)html+=`<div class="preview-section"><h5>Não inclusos</h5><ul>${ni.slice(0,5).map(x=>`<li>${esc(x.text)}</li>`).join('')}</ul>${ni.length>5?`<div class="preview-muted">+ ${ni.length-5} item(ns)</div>`:''}</div>`;
+  return html;
+}
+function buildBudget(status='draft'){
+  const now=iso(TODAY())+'T09:00:00';
+  if(!wizardState.savedNumber){const nums=state.budgets.map(x=>Number(String(x.number||'').split('-').pop())||0);const n=(nums.length?Math.max(...nums):0)+1;wizardState.savedNumber=`ORC-${TODAY().getFullYear()}-${String(n).padStart(3,'0')}`}
+  if(!wizardState.savedBudgetId)wizardState.savedBudgetId=uid('budget');
+  return{id:wizardState.savedBudgetId,number:wizardState.savedNumber,createdAt:now,validityDays:wizardState.closing.validityDays,client:structuredClone(safeClient()),tituloServico:wizardState.services.map(s=>s.name).join(' + ')||'Serviço técnico',total:Math.round(totalReais()*100),status,demoProposal:{property:structuredClone(wizardState.property),services:structuredClone(wizardState.services),items:structuredClone(wizardState.items),additionalCosts:structuredClone(wizardState.additionalCosts||[]),nonIncluded:structuredClone(wizardState.nonIncluded),closing:structuredClone(wizardState.closing)}}
+}
+window.__SAVEBUDGET__=(status='draft')=>{const b=buildBudget(status);const idx=state.budgets.findIndex(x=>x.id===b.id);if(idx>-1)state.budgets[idx]=b;else state.budgets.push(b);save();toast(status==='sent'?'Orçamento salvo e marcado como enviado.':'Orçamento salvo como rascunho.');if(wizardState.step===5)renderInto();return b};
+window.__PRINTPROPOSAL__=()=>{const b=window.__SAVEBUDGET__('draft');const old=document.title;document.title=`DEMO_${b.number}_Total_Obras`;setTimeout(()=>{window.print();setTimeout(()=>document.title=old,500)},80)};
+window.__GENERATE__=window.__PRINTPROPOSAL__;
+function responsibleHtml(){const selected=DEMO_RESPONSIBLES.filter(r=>wizardState.closing.responsibleIds.includes(r.id));return selected.map(r=>`<div><strong>${esc(r.name)}</strong><br>${esc(r.role)}</div>`).join('')||'<div>Responsável técnico não selecionado.</div>'}
+function finalDocumentHtml(number){
+  const c=safeClient(),p=wizardState.property,ni=wizardState.nonIncluded.filter(x=>x.enabled&&x.text.trim());
+  return `<div class="document-shell"><div class="document demo-watermarked"><div class="demo-watermark">DEMONSTRAÇÃO<small>SEM VALIDADE COMERCIAL</small></div><div class="doc-demo-notice">Documento demonstrativo — não válido para contratação, registro, protocolo ou uso comercial</div>
+  <div class="doc-head"><div class="doc-logo"><span class="doc-logo-mark"></span><div><div class="doc-company">${esc(state.company)}</div><div class="doc-muted">Propostas e Gestão</div></div></div><div style="text-align:right"><div class="doc-muted">Proposta Comercial Demonstrativa</div><strong>Nº ${esc(number)}</strong><div class="doc-muted">${fmtDate(iso(TODAY()))}</div></div></div>
+  <div class="doc-title">${esc(proposalTitle())}</div>
+  <div class="doc-info"><div><span class="doc-label">Cliente</span>${esc(c.name)}</div><div><span class="doc-label">Documento</span>${esc(c.document||'—')}</div><div class="wide"><span class="doc-label">Imóvel</span>${esc(p.address||'—')}</div><div><span class="doc-label">Matrícula / inscrição</span>${esc(p.matricula||'—')} · ${esc(p.inscricao||'—')}</div><div><span class="doc-label">Lote / quadra</span>${esc(p.lote||'—')} · ${esc(p.quadra||'—')}</div><div class="wide"><span class="doc-label">Áreas</span>${Number(p.terreno)||0} m² de terreno · ${Number(p.area)||0} m² construída</div></div>
+  <div class="doc-section"><h2>1. Objeto</h2>${wizardState.services.map(s=>`<p>${esc(s.objeto)}</p>`).join('')||'<p>Objeto não informado.</p>'}</div>
+  <div class="doc-section"><h2>2. Escopo dos serviços</h2>${wizardState.services.map(s=>`<p><strong>${esc(s.name)}</strong></p><ul class="bullets">${splitLines(s.scope).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`).join('')}</div>
+  <div class="doc-section"><h2>3. Metodologia e entregáveis</h2>${wizardState.services.map(s=>`<p><strong>${esc(s.name)}</strong></p><ul class="bullets">${splitLines(s.methodology).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`).join('')}</div>
+  <div class="doc-section"><h2>4. Honorários</h2><table class="doc-table"><thead><tr><th>Serviço</th><th>Descrição</th><th class="right">Qtd.</th><th class="right">Valor</th></tr></thead><tbody>${wizardState.items.map(it=>`<tr><td>${esc(it.name)}</td><td>${esc(it.objective||'—')}</td><td class="right">${Number(it.qty)||0} ${esc(it.unitLabel)}</td><td class="right">${fmtMoney(itemTotal(it)*100)}</td></tr>`).join('')||'<tr><td colspan="4">Nenhum item de honorários informado.</td></tr>'}<tr><td colspan="3"><strong>Subtotal de honorários</strong></td><td class="right"><strong>${fmtMoney(feesSubtotalReais()*100)}</strong></td></tr></tbody></table></div>
+  ${(wizardState.additionalCosts||[]).length?`<div class="doc-section"><h2>5. Custos adicionais</h2><table class="doc-table"><thead><tr><th>Descrição</th><th>Observação</th><th class="right">Qtd.</th><th class="right">Valor</th></tr></thead><tbody>${wizardState.additionalCosts.map(it=>`<tr><td>${esc(it.name)}</td><td>${esc(it.notes||'—')}</td><td class="right">${Number(it.qty)||0} ${esc(it.unitLabel)}</td><td class="right">${fmtMoney(itemTotal(it)*100)}</td></tr>`).join('')}<tr><td colspan="3"><strong>Subtotal de custos adicionais</strong></td><td class="right"><strong>${fmtMoney(costsSubtotalReais()*100)}</strong></td></tr></tbody></table></div>`:''}
+  <div class="doc-section"><h2>${(wizardState.additionalCosts||[]).length?'6':'5'}. Resumo financeiro</h2><table class="doc-table"><tbody><tr><td>Subtotal de honorários</td><td class="right">${fmtMoney(feesSubtotalReais()*100)}</td></tr>${(wizardState.additionalCosts||[]).length?`<tr><td>Custos adicionais</td><td class="right">${fmtMoney(costsSubtotalReais()*100)}</td></tr>`:''}${Number(wizardState.closing.discount)>0?`<tr><td>Desconto (${Number(wizardState.closing.discount).toLocaleString('pt-BR')}%)</td><td class="right">- ${fmtMoney((subtotalReais()-totalReais())*100)}</td></tr>`:''}<tr class="doc-total-row"><td>Total da proposta</td><td class="right">${fmtMoney(totalReais()*100)}</td></tr></tbody></table></div>
+  <div class="doc-section"><h2>${(wizardState.additionalCosts||[]).length?'7':'6'}. Prazo e forma de pagamento</h2><p><strong>Prazo:</strong> ${esc(wizardState.closing.deadline)}</p><p style="white-space:pre-line"><strong>Pagamento:</strong> ${esc(wizardState.closing.payment)}</p><p><strong>Validade:</strong> ${wizardState.closing.validityDays} dias.</p></div>
+  <div class="doc-section"><h2>${(wizardState.additionalCosts||[]).length?'8':'7'}. Itens não inclusos</h2><ul class="bullets">${ni.map(x=>`<li>${esc(x.text)}</li>`).join('')||'<li>Nenhum item informado.</li>'}</ul></div>
+  ${wizardState.closing.observations||p.observations?`<div class="doc-section"><h2>${(wizardState.additionalCosts||[]).length?'9':'8'}. Observações</h2>${p.observations?`<p>${esc(p.observations)}</p>`:''}${wizardState.closing.observations?`<p>${esc(wizardState.closing.observations)}</p>`:''}</div>`:''}
+  <div class="doc-section"><h2>Responsáveis técnicos</h2>${responsibleHtml()}</div><div class="doc-footer">DEMONSTRAÇÃO DO TOTAL OBRAS · DOCUMENTO SEM VALIDADE COMERCIAL · www.totalobras.com.br</div></div></div>`;
+}
+function existingBudgetDocumentHtml(b){return `<div class="final-actions no-print"><button class="btn" onclick="navigate('budgets')">← Voltar aos orçamentos</button><button class="btn primary" onclick="window.print()">Imprimir demonstrativo</button></div><div class="document-shell"><div class="document demo-watermarked"><div class="demo-watermark">DEMONSTRAÇÃO<small>SEM VALIDADE COMERCIAL</small></div><div class="doc-demo-notice">Documento demonstrativo — sem validade comercial</div><div class="doc-head"><div class="doc-logo"><span class="doc-logo-mark"></span><div><div class="doc-company">${esc(state.company)}</div><div class="doc-muted">Propostas e Gestão</div></div></div><div style="text-align:right"><strong>${esc(b.number)}</strong><div class="doc-muted">${fmtDate(b.createdAt)}</div></div></div><div class="doc-title">${esc(b.tituloServico)}</div><div class="doc-info"><div><span class="doc-label">Cliente</span>${esc(b.client.name)}</div><div><span class="doc-label">Total</span>${fmtMoney(b.total)}</div></div><div class="doc-section"><h2>Proposta demonstrativa</h2><p>Este registro de exemplo não possui o conteúdo detalhado do assistente. Crie um novo orçamento para experimentar as cinco etapas, edição de textos e PDF com marca d’água.</p></div><div class="doc-footer">DEMONSTRAÇÃO DO TOTAL OBRAS · SEM VALIDADE COMERCIAL</div></div></div>`}
+window.__VIEW__=(id)=>{const b=state.budgets.find(x=>x.id===id);if(!b)return;if(b.demoProposal){wizardState=freshWizard();Object.assign(wizardState,{step:5,client:b.client,property:b.demoProposal.property,services:b.demoProposal.services,items:b.demoProposal.items||[],additionalCosts:b.demoProposal.additionalCosts||[],nonIncluded:b.demoProposal.nonIncluded||[],closing:b.demoProposal.closing,savedBudgetId:b.id,savedNumber:b.number});navigate('new-budget')}else{document.getElementById('content').innerHTML=existingBudgetDocumentHtml(b)}};
+
+/* ================= MODELOS DE PROPOSTA ================= */
+let templateDetailId=null;
+function templatesPage(){
+  if(templateDetailId)return templateDetailHtml(templateDetailId);
+  const byCategory=TEMPLATES.reduce((acc,t)=>{(acc[t.category]??=[]).push(t);return acc},{});
+  return `<div class="page-head"><div><h1>Modelos de proposta</h1><p>Textos padronizados combináveis, usados no assistente de novo orçamento.</p></div></div>
+  ${Object.entries(byCategory).map(([cat,items])=>`<div style="margin-bottom:22px"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--gold-ink);margin:0 0 10px">${cat}</h2>
+  <div class="template-grid">${items.map(t=>`<div class="template-card"><div class="category">${t.category}</div><h3>${esc(t.nome)}</h3><p>${esc(t.objeto)}</p>
+  <div class="actions"><button class="btn sm" onclick="__OPENTPL__('${t.id}')">Ver modelo completo</button></div></div>`).join('')}</div></div>`).join('')}`;
+}
+window.__OPENTPL__=(id)=>{templateDetailId=id;render()};
+window.__CLOSETPL__=()=>{templateDetailId=null;render()};
+function templateDetailHtml(id){
+  const t=TEMPLATES.find(x=>x.id===id);
+  const sections=[['objeto','Objeto'],['escopoServicos','Escopo dos serviços'],['metodologiaEntregaveis','Metodologia e entregáveis'],['prazoExecucao','Prazo de execução'],['formaPagamento','Forma de pagamento'],['naoIncluidos','Itens não inclusos'],['observacoes','Observações']];
+  return `<div class="page-head"><div><h1>${esc(t.nome)}</h1><p>${esc(t.category)}</p></div><button class="btn" onclick="__CLOSETPL__()">← Voltar aos modelos</button></div>
+  <div class="template-detail"><nav class="toc card">${sections.map(([key,label])=>`<button onclick="document.getElementById('sec-${key}').scrollIntoView({behavior:'smooth'})">${label}</button>`).join('')}</nav>
+  <div class="card">${sections.map(([key,label])=>`<div class="text-section" id="sec-${key}"><h2>${label}</h2>${key==='objeto'?`<p>${esc(t[key])}</p>`:`<ul class="bullets">${t[key].split('\n').map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`}</div>`).join('')}</div></div>`;
+}
+
+/* ================= PACOTES ================= */
+function packagesPage(){
+  return `<div class="page-head"><div><h1>Pacotes</h1><p>Conjuntos prontos de categorias, serviços e modelos por segmento de atuação.</p></div></div>
+  <div class="package-grid">${PACKAGES.map(p=>`<div class="package-card"><h3>${p.name}</h3><div class="audience">${p.audience}</div><p style="color:var(--muted);margin:0 0 12px;font-size:13.5px">${p.shortDescription}</p><button class="btn sm">Aplicar pacote</button></div>`).join('')}</div>`;
+}
+
+/* ================= FINANCEIRO ================= */
+let financeTab='overview';
+function financePage(){
+  const tabs=[['overview','Visão geral'],['receivables','Contas a receber'],['expenses','Despesas'],['settings','Contas e categorias']];
+  const now=iso(TODAY());
+  const openTotal=state.receivables.reduce((s,r)=>s+r.parcelas.reduce((s2,p)=>s2+Math.max(0,p.valor-p.pago),0),0);
+  const overdue=state.receivables.reduce((s,r)=>s+r.parcelas.filter(p=>p.venc<now&&p.pago<p.valor).reduce((s2,p)=>s2+(p.valor-p.pago),0),0);
+  const receivedMonth=state.receivables.flatMap(r=>r.parcelas).filter(p=>p.pago>0&&isCurrentMonth(p.pagoEm)).reduce((s,p)=>s+p.pago,0);
+  const paidExpenses=state.expenses.filter(e=>e.pago&&isCurrentMonth(e.venc)).reduce((s,e)=>s+e.valor,0);
+  const openExpenses=state.expenses.filter(e=>!e.pago).reduce((s,e)=>s+e.valor,0);
+  let body='';
+  if(financeTab==='overview'){
+    body=`<div class="stats"><div class="stat"><div class="stat-label">A receber em aberto</div><div class="stat-value">${fmtMoney(openTotal)}</div></div>
+    <div class="stat"><div class="stat-label">Recebimentos atrasados</div><div class="stat-value" style="color:#a3253c">${fmtMoney(overdue)}</div></div>
+    <div class="stat"><div class="stat-label">Recebido no mês</div><div class="stat-value" style="color:#0d7a4f">${fmtMoney(receivedMonth)}</div></div>
+    <div class="stat"><div class="stat-label">Despesas pagas no mês</div><div class="stat-value">${fmtMoney(paidExpenses)}</div></div></div>
+    <section class="card"><div class="card-pad"><h2 class="card-title">Movimentações recentes</h2></div>
+    <div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Descrição</th><th class="amount">Valor</th></tr></thead><tbody>
+    ${state.receivables.flatMap(r=>r.parcelas.filter(p=>p.pago>0).map(p=>({data:p.pagoEm||p.venc,desc:`${r.budgetNumber} — ${r.client}`,valor:p.pago})))
+      .concat(state.expenses.filter(e=>e.pago).map(e=>({data:e.venc,desc:e.descricao,valor:-e.valor})))
+      .sort((a,b)=>b.data.localeCompare(a.data)).map(m=>`<tr><td>${fmtDate(m.data)}</td><td>${esc(m.desc)}</td><td class="amount" style="color:${m.valor<0?'#a3253c':'#0d7a4f'}">${m.valor<0?'-':'+'}${fmtMoney(Math.abs(m.valor))}</td></tr>`).join('')}
+    </tbody></table></div></section>`;
+  } else if(financeTab==='receivables'){
+    body=`<div class="card"><div class="card-pad"><h2 class="card-title">Contas a receber</h2><p class="card-sub">Parcelas vinculadas a cada orçamento aprovado.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">${state.receivables.map((r,ri)=>{
+      const total=r.parcelas.reduce((s,p)=>s+p.valor,0),pago=r.parcelas.reduce((s,p)=>s+p.pago,0);
+      const st=pago>=total?'approved':pago>0?'sent':(r.parcelas.some(p=>p.venc<now)?'rejected':'draft');
+      const label=pago>=total?'Pago':pago>0?'Parcial':(r.parcelas.some(p=>p.venc<now)?'Atrasado':'Em aberto');
+      return `<details style="border:1px solid var(--line);border-radius:10px;padding:11px 13px"><summary style="cursor:pointer;list-style:none;display:flex;justify-content:space-between"><span><strong>${r.budgetNumber}</strong> — ${esc(r.client)}</span><span>${fmtMoney(total)} <span class="pill ${STATUS_PILL[st]||'pill-draft'}">${label}</span></span></summary>
+      ${r.parcelas.map((p,pi)=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid #f0ece1;font-size:13px"><span>Parcela ${p.n}/${r.parcelas.length} · vence ${fmtDate(p.venc)} · saldo ${fmtMoney(p.valor-p.pago)}</span>${p.pago<p.valor?`<button class="btn sm" onclick="__RECEIVE__(${ri},${pi})">Receber</button>`:`<button class="btn link" onclick="__UNRECEIVE__(${ri},${pi})">Apagar lançamento</button>`}</div>`).join('')}
+      </details>`}).join('')}</div></div></div>`;
+  } else if(financeTab==='expenses'){
+    body=`<div class="card"><div class="card-pad"><h2 class="card-title">Despesas</h2></div><div class="table-wrap"><table class="table"><thead><tr><th>Descrição</th><th>Vencimento</th><th class="amount">Valor</th><th>Situação</th></tr></thead><tbody>
+    ${state.expenses.map(e=>`<tr><td>${esc(e.descricao)}</td><td>${fmtDate(e.venc)}</td><td class="amount">${fmtMoney(e.valor)}</td><td>${e.pago?'<span class="pill pill-approved">Paga</span>':'<span class="pill pill-sent">Em aberto</span>'}</td></tr>`).join('')}
+    </tbody></table></div></div>`;
+  } else {
+    body=`<div class="grid-2"><section class="card"><div class="card-pad"><h2 class="card-title">Contas financeiras</h2><p class="card-sub">Conta principal · PIX, boleto e transferência.</p></div></section>
+    <section class="card"><div class="card-pad"><h2 class="card-title">Categorias de despesas</h2><p class="card-sub">Aluguel, materiais, internet, impostos.</p></div></section></div>`;
+  }
+  return `<div class="page-head"><div><h1>Financeiro</h1><p>Contas a receber, pagamentos, despesas e fluxo de caixa.</p></div></div>
+  <div class="filters" style="gap:6px">${tabs.map(([k,l])=>`<button class="btn ${financeTab===k?'primary':''} sm" onclick="__FINTAB__('${k}')">${l}</button>`).join('')}</div>
+  ${body}`;
+}
+window.__FINTAB__=(k)=>{financeTab=k;render()};
+window.__RECEIVE__=(ri,pi)=>{const p=state.receivables[ri].parcelas[pi];p.pago=p.valor;p.pagoEm=iso(TODAY());save();toast('Recebimento registrado.');render()};
+window.__UNRECEIVE__=(ri,pi)=>{const p=state.receivables[ri].parcelas[pi];p.pago=0;p.pagoEm=null;save();toast('Lançamento apagado.');render()};
+
+/* ================= CONFIGURAÇÕES ================= */
+function settingsPage(){
+  return `<div class="page-head"><div><h1>Configurações</h1><p>Dados da empresa ativa, responsáveis e catálogo.</p></div></div>
+  <div class="grid-2"><section class="card"><div class="card-pad"><h2 class="card-title">Empresa ativa</h2>
+    <div class="field" style="margin-top:12px"><label>Nome da empresa</label><input class="input" value="${esc(state.company)}" onchange="state.company=this.value;save();toast('Configurações salvas.')"></div>
+    <div class="field" style="margin-top:10px"><label>Responsável técnico</label><input class="input" value="Ana Beatriz Meridiano — CAU A00000-0" disabled></div>
+  </div></section>
+  <section class="card"><div class="card-pad"><h2 class="card-title">Backup e dados</h2><p class="card-sub">Os dados desta demonstração ficam somente neste navegador.</p>
+    <button class="btn danger" style="margin-top:14px" onclick="__RESTORE__()">Restaurar dados fictícios</button>
+  </div></section></div>`;
+}
+window.__RESTORE__=()=>{state=defaultState();save();toast('Demonstração restaurada.');render()};
+
+/* ================= LICENÇA ================= */
+function licensePage(){
+  return `<div class="page-head"><div><h1>Licença do Total Obras</h1><p>Plano, validade, computadores e módulos liberados.</p></div>
+  <div style="display:flex;gap:8px"><button class="btn">Validar agora</button><button class="btn danger">Desativar computador</button></div></div>
+  <div class="stats"><div class="stat"><div class="stat-label">Plano</div><div class="stat-value">${LICENSE.plan}</div></div>
+  <div class="stat"><div class="stat-label">Situação</div><div class="stat-value" style="color:#0d7a4f">${LICENSE.situacao}</div></div>
+  <div class="stat"><div class="stat-label">Empresas</div><div class="stat-value">${LICENSE.empresas}</div></div>
+  <div class="stat"><div class="stat-label">Computadores</div><div class="stat-value">${LICENSE.computadores}</div></div></div>
+  <div class="grid-2"><section class="card"><div class="card-pad"><h2 class="card-title">Informações</h2>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:13.5px;margin-top:10px">
+  <span style="color:var(--muted)">Cliente</span><strong>${LICENSE.cliente}</strong>
+  <span style="color:var(--muted)">Offline até</span><span>${LICENSE.offlineAte}</span>
+  <span style="color:var(--muted)">Computador</span><span>${LICENSE.computador}</span>
+  <span style="color:var(--muted)">Última validação</span><span>${LICENSE.ultimaValidacao}</span>
+  <span style="color:var(--muted)">Proteção local</span><span>Assinatura verificada automaticamente</span>
+  </div></div></section>
+  <section class="card"><div class="card-pad"><h2 class="card-title">Módulos do plano</h2>
+  <div class="module-grid" style="margin-top:10px">${Object.entries(FEATURE_NAMES).map(([code,name])=>{const on=ENABLED_FEATURES.includes(code);return `<div class="module-item ${on?'on':'off'}">${on?'✓':'—'} ${name}</div>`}).join('')}</div>
+  </div></section></div>`;
+}
+
+/* ================= NAVEGAÇÃO / RENDER ================= */
+function navigate(page){currentPage=page;document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===page));render();window.scrollTo({top:0,behavior:'smooth'});closeMobile()}
+function render(){
+  const c=document.getElementById('content');
+  c.innerHTML=currentPage==='dashboard'?dashboardPage()
+    :currentPage==='budgets'?budgetsPage()
+    :currentPage==='new-budget'?newBudgetPage()
+    :currentPage==='templates'?templatesPage()
+    :currentPage==='packages'?packagesPage()
+    :currentPage==='finance'?financePage()
+    :currentPage==='settings'?settingsPage()
+    :currentPage==='licenca'?licensePage():dashboardPage();
+  c.querySelectorAll('[data-nav]').forEach(el=>el.onclick=()=>navigate(el.dataset.nav));
+}
+function renderInto(){render()}
+window.__RENDER__=render;
+window.render=render;window.navigate=navigate;window.wizardState=wizardState;window.state=state;
+
+document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));
+document.querySelector('.license-pill').addEventListener('click',(e)=>{e.preventDefault();navigate('licenca')});
+const sidebar=document.getElementById('sidebar');
+document.getElementById('collapse').onclick=()=>{sidebar.classList.toggle('collapsed');try{localStorage.setItem('total-obras-demo-sidebar',sidebar.classList.contains('collapsed')?'1':'0')}catch(e){}};
+try{if(localStorage.getItem('total-obras-demo-sidebar')==='1')sidebar.classList.add('collapsed')}catch(e){}
+const overlay=document.getElementById('overlay');
+document.getElementById('mobileMenu').onclick=()=>{sidebar.classList.add('mobile-open');overlay.classList.remove('hidden')};
+overlay.onclick=closeMobile;function closeMobile(){sidebar.classList.remove('mobile-open');overlay.classList.add('hidden')}
+document.getElementById('companySelect').onchange=(e)=>{state.company=e.target.value;save();render()};
+
+render();
+})();
+</script>
+</body>
 </html>
